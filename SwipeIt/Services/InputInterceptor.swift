@@ -72,25 +72,27 @@ public final class InputInterceptor {
             return true
         }
 
-        let keyboardEvents: CGEventMask =
-            (1 << CGEventType.keyDown.rawValue) |
-            (1 << CGEventType.keyUp.rawValue) |
-            (1 << CGEventType.flagsChanged.rawValue) |
-            (1 << 14) // NSSystemDefined (media, volume, brightness keys)
+        var keyboardEvents: CGEventMask = 0
+        keyboardEvents |= (1 << CGEventType.keyDown.rawValue)
+        keyboardEvents |= (1 << CGEventType.keyUp.rawValue)
+        keyboardEvents |= (1 << CGEventType.flagsChanged.rawValue)
+        keyboardEvents |= (1 << 14) // NSSystemDefined (media, volume, brightness keys)
 
-        let pointerEvents: CGEventMask =
-            (1 << CGEventType.leftMouseDown.rawValue) |
-            (1 << CGEventType.leftMouseUp.rawValue) |
-            (1 << CGEventType.rightMouseDown.rawValue) |
-            (1 << CGEventType.rightMouseUp.rawValue) |
-            (1 << CGEventType.otherMouseDown.rawValue) |
-            (1 << CGEventType.otherMouseUp.rawValue) |
-            (1 << CGEventType.mouseMoved.rawValue) |
-            (1 << CGEventType.leftMouseDragged.rawValue) |
-            (1 << CGEventType.rightMouseDragged.rawValue) |
-            (1 << CGEventType.otherMouseDragged.rawValue) |
-            (1 << CGEventType.scrollWheel.rawValue) |
-            (1 << 29) | (1 << 30) | (1 << 31) // Trackpad gesture events
+        var pointerEvents: CGEventMask = 0
+        pointerEvents |= (1 << CGEventType.leftMouseDown.rawValue)
+        pointerEvents |= (1 << CGEventType.leftMouseUp.rawValue)
+        pointerEvents |= (1 << CGEventType.rightMouseDown.rawValue)
+        pointerEvents |= (1 << CGEventType.rightMouseUp.rawValue)
+        pointerEvents |= (1 << CGEventType.otherMouseDown.rawValue)
+        pointerEvents |= (1 << CGEventType.otherMouseUp.rawValue)
+        pointerEvents |= (1 << CGEventType.mouseMoved.rawValue)
+        pointerEvents |= (1 << CGEventType.leftMouseDragged.rawValue)
+        pointerEvents |= (1 << CGEventType.rightMouseDragged.rawValue)
+        pointerEvents |= (1 << CGEventType.otherMouseDragged.rawValue)
+        pointerEvents |= (1 << CGEventType.scrollWheel.rawValue)
+        pointerEvents |= (1 << 29)
+        pointerEvents |= (1 << 30)
+        pointerEvents |= (1 << 31) // Trackpad gesture events
 
         let eventMask = keyboardEvents | pointerEvents
         let userInfo = Unmanaged.passUnretained(self).toOpaque()
