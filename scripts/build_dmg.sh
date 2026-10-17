@@ -30,7 +30,7 @@ xcodebuild \
     -project "${PROJECT_ROOT}/${APP_NAME}.xcodeproj" \
     -scheme "${SCHEME_NAME}" \
     -configuration "${CONFIGURATION}" \
-    -destination "platform=macOS" \
+    -destination "generic/platform=macOS" \
     -derivedDataPath "${DERIVED_DATA}" \
     CODE_SIGN_IDENTITY="" \
     CODE_SIGNING_REQUIRED=NO \
