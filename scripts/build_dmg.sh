@@ -32,15 +32,23 @@ xcodebuild \
     -configuration "${CONFIGURATION}" \
     -destination "platform=macOS" \
     -derivedDataPath "${DERIVED_DATA}" \
+    CODE_SIGN_IDENTITY="" \
+    CODE_SIGNING_REQUIRED=NO \
     CODE_SIGNING_ALLOWED=NO \
-    OTHER_SWIFT_FLAGS="-disable-sandbox" \
     build
 
 BUILT_APP="${DERIVED_DATA}/Build/Products/${CONFIGURATION}/${APP_NAME}.app"
 
 if [ ! -d "${BUILT_APP}" ]; then
-    echo "ERROR: Built application not found at ${BUILT_APP}"
-    exit 1
+    echo "Warning: Not found at ${BUILT_APP}, searching DerivedData..."
+    FOUND_APP=$(find "${DERIVED_DATA}" -name "${APP_NAME}.app" -type d | head -n 1)
+    if [ -n "${FOUND_APP}" ] && [ -d "${FOUND_APP}" ]; then
+        BUILT_APP="${FOUND_APP}"
+        echo "Found at: ${BUILT_APP}"
+    else
+        echo "ERROR: Built application not found in ${DERIVED_DATA}"
+        exit 1
+    fi
 fi
 
 # 2. Stage the app and /Applications symlink
