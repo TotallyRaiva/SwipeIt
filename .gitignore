@@ -9,6 +9,8 @@ xcuserdata/
 *.xcscmblueprint
 *.xccheckout
 build/
+dist/
+*.dmg
 DerivedData/
 *.moved-aside
 *.pbxuser
