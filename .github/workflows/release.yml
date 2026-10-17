@@ -28,6 +28,16 @@ jobs:
       - name: Verify Xcode version
         run: xcodebuild -version
 
+      - name: Run Unit Tests
+        run: |
+          xcodebuild test \
+            -project SwipeIt.xcodeproj \
+            -scheme SwipeIt \
+            -destination "platform=macOS" \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+
       - name: Build and Package DMG
         run: |
           chmod +x ./scripts/build_dmg.sh

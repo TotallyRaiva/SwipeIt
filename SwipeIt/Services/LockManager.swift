@@ -11,6 +11,7 @@ import Observation
 
 /// Central state machine coordinating input interception, lock modes, overlays, and the safety countdown timer.
 @Observable
+@MainActor
 public final class LockManager {
     public let settings: SettingsStore
     public let accessibility: AccessibilityManager
@@ -39,19 +40,22 @@ public final class LockManager {
     }
 
     public init(
-        settings: SettingsStore = SettingsStore(),
+        settings: SettingsStore,
         accessibility: AccessibilityManager = AccessibilityManager(),
-        interceptor: InputInterceptor = InputInterceptor(),
-        overlayManager: OverlayWindowManager = OverlayWindowManager()
+        interceptor: InputInterceptor = InputInterceptor()
     ) {
         self.settings = settings
         self.accessibility = accessibility
         self.interceptor = interceptor
-        self.overlayManager = overlayManager
+        self.overlayManager = OverlayWindowManager()
 
         setupCallbacks()
         syncInterceptorConfiguration()
         startEventTapIfPermitted()
+    }
+
+    public convenience init() {
+        self.init(settings: SettingsStore())
     }
 
     // MARK: - Lock / Unlock Actions
@@ -105,6 +109,23 @@ public final class LockManager {
         interceptor.enableGlobalShortcuts = settings.enableGlobalShortcuts
     }
 
+    /// Re-evaluates timer and interceptor settings when configuration changes dynamically.
+    public func handleSettingsChanged() {
+        syncInterceptorConfiguration()
+        if lockMode != .unlocked {
+            if !settings.autoUnlockTimerEnabled {
+                stopSafetyTimer()
+            } else if let currentRemaining = remainingSeconds {
+                let maxSeconds = max(1, settings.autoUnlockMinutes) * 60
+                if currentRemaining > maxSeconds {
+                    remainingSeconds = maxSeconds
+                }
+            } else {
+                startSafetyTimerIfNeeded()
+            }
+        }
+    }
+
     @discardableResult
     public func startEventTapIfPermitted() -> Bool {
         syncInterceptorConfiguration()
@@ -126,11 +147,14 @@ public final class LockManager {
         let totalSeconds = max(1, settings.autoUnlockMinutes) * 60
         remainingSeconds = totalSeconds
 
-        countdownTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-            Task { @MainActor in
+        // Schedule on .commonModes so timer ticks continuously even when menus or popups are tracking events
+        let timer = Timer(timeInterval: 1.0, repeats: true) { [weak self] _ in
+            MainActor.assumeIsolated {
                 self?.tickSafetyTimer()
             }
         }
+        RunLoop.main.add(timer, forMode: .common)
+        countdownTimer = timer
     }
 
     private func tickSafetyTimer() {
@@ -152,8 +176,16 @@ public final class LockManager {
 
     private func setupCallbacks() {
         accessibility.onPermissionGranted = { [weak self] in
-            self?.startEventTapIfPermitted()
-            self?.statusBannerMessage = "Accessibility permission granted! Global shortcuts are now active."
+            Task { @MainActor in
+                self?.startEventTapIfPermitted()
+                self?.statusBannerMessage = "Accessibility permission granted! Global shortcuts are now active."
+            }
+        }
+
+        settings.onSettingsChanged = { [weak self] in
+            Task { @MainActor in
+                self?.handleSettingsChanged()
+            }
         }
 
         interceptor.onAction = { [weak self] action in

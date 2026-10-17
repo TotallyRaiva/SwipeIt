@@ -295,6 +295,7 @@ struct ContentView: View {
                     title: "Full Lock (Keyboard + Trackpad)",
                     subtitle: "Blocks all keys, clicks, and gestures",
                     combo: $settings.lockAllShortcut,
+                    duplicateCheck: { settings.duplicateCheckMessage(for: $0, target: .lockAll) },
                     onCommit: { lockManager.syncInterceptorConfiguration() },
                     onRecordingStateChange: { lockManager.isRecordingShortcut = $0 }
                 )
@@ -305,6 +306,7 @@ struct ContentView: View {
                     title: "Keyboard Only Lock",
                     subtitle: "Blocks keyboard while mouse stays free",
                     combo: $settings.lockKeyboardOnlyShortcut,
+                    duplicateCheck: { settings.duplicateCheckMessage(for: $0, target: .lockKeyboardOnly) },
                     onCommit: { lockManager.syncInterceptorConfiguration() },
                     onRecordingStateChange: { lockManager.isRecordingShortcut = $0 }
                 )
@@ -315,6 +317,7 @@ struct ContentView: View {
                     title: "Custom Unlock Combination",
                     subtitle: "Unlocks your Mac from any lock mode",
                     combo: $settings.unlockShortcut,
+                    duplicateCheck: { settings.duplicateCheckMessage(for: $0, target: .unlock) },
                     onCommit: { lockManager.syncInterceptorConfiguration() },
                     onRecordingStateChange: { lockManager.isRecordingShortcut = $0 }
                 )

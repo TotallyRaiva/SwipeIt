@@ -9,6 +9,7 @@ import AppKit
 import SwiftUI
 
 /// Manages multi-monitor borderless overlay panels while SwipeIt is in a locked state.
+@MainActor
 public final class OverlayWindowManager {
     private var overlayWindows: [NSWindow] = []
     private var isCursorHidden: Bool = false
@@ -46,7 +47,7 @@ public final class OverlayWindowManager {
             panel.isOpaque = (settings.overlayStyle == .blackoutCleaning)
             panel.backgroundColor = (settings.overlayStyle == .blackoutCleaning) ? .black : .clear
             panel.hasShadow = false
-            panel.ignoresMouseEvents = (lockManager.lockMode == .keyboardOnly && settings.overlayStyle == .invisible)
+            panel.ignoresMouseEvents = (lockManager.lockMode == .keyboardOnly)
 
             let hostingView = NSHostingView(
                 rootView: LockOverlayView(

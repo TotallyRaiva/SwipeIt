@@ -26,9 +26,10 @@ public enum InterceptorAction: Sendable, Equatable {
 }
 
 /// Low-level Quartz CGEventTap manager and key-chord state machine.
-public final class InputInterceptor {
+public final class InputInterceptor: @unchecked Sendable {
     private var eventTap: CFMachPort?
     private var runLoopSource: CFRunLoopSource?
+    private var activeMask: CGEventMask = 0
 
     /// Currently held physical key codes (kVK_*) for simultaneous chord detection.
     public private(set) var pressedKeyCodes: Set<Int64> = []
@@ -38,6 +39,9 @@ public final class InputInterceptor {
         didSet {
             if currentLockMode != oldValue {
                 pressedKeyCodes.removeAll()
+                if isTapActive && targetEventMask(for: currentLockMode) != activeMask {
+                    start()
+                }
             }
         }
     }
@@ -50,7 +54,7 @@ public final class InputInterceptor {
     public var enableGlobalShortcuts: Bool = true
     public var isRecordingShortcut: Bool = false
 
-    /// Callback invoked on the main thread when a lock or unlock shortcut is matched.
+    /// Callback invoked when a lock or unlock shortcut is matched.
     public var onAction: ((InterceptorAction) -> Void)?
 
     public private(set) var isTapActive: Bool = false
@@ -61,40 +65,59 @@ public final class InputInterceptor {
         stop()
     }
 
-    // MARK: - Event Tap Lifecycle
+    // MARK: - Event Mask Determination
 
-    /// Starts the global Quartz CGEventTap on the main run loop.
-    /// Returns true if the tap was successfully created (requires Accessibility permission and App Sandbox disabled).
-    @discardableResult
-    public func start() -> Bool {
-        if isTapActive, let tap = eventTap {
-            CGEvent.tapEnable(tap: tap, enable: true)
-            return true
+    /// Returns the minimal required event mask for the specified lock mode.
+    /// When unlocked or in keyboard-only mode, pointer/mouse events are completely omitted to prevent main-thread overhead.
+    public func targetEventMask(for mode: LockMode) -> CGEventMask {
+        var mask: CGEventMask = 0
+        mask |= (1 << CGEventType.keyDown.rawValue)
+        mask |= (1 << CGEventType.keyUp.rawValue)
+        mask |= (1 << CGEventType.flagsChanged.rawValue)
+        mask |= (1 << 14) // NSSystemDefined (media, volume, brightness keys)
+
+        if mode == .keyboardAndMouse {
+            mask |= (1 << CGEventType.leftMouseDown.rawValue)
+            mask |= (1 << CGEventType.leftMouseUp.rawValue)
+            mask |= (1 << CGEventType.rightMouseDown.rawValue)
+            mask |= (1 << CGEventType.rightMouseUp.rawValue)
+            mask |= (1 << CGEventType.otherMouseDown.rawValue)
+            mask |= (1 << CGEventType.otherMouseUp.rawValue)
+            mask |= (1 << CGEventType.mouseMoved.rawValue)
+            mask |= (1 << CGEventType.leftMouseDragged.rawValue)
+            mask |= (1 << CGEventType.rightMouseDragged.rawValue)
+            mask |= (1 << CGEventType.otherMouseDragged.rawValue)
+            mask |= (1 << CGEventType.scrollWheel.rawValue)
+            mask |= (1 << CGEventType.tabletPointer.rawValue)
+            mask |= (1 << CGEventType.tabletProximity.rawValue)
+            mask |= (1 << 18) // kCGEventRotate
+            mask |= (1 << 29) // kCGEventGesture
+            mask |= (1 << 30) // kCGEventMagnify (smart zoom)
+            mask |= (1 << 31) // kCGEventSwipe
+            mask |= (1 << 32) // kCGEventQuickLook / Force-click / Pressure
         }
 
-        var keyboardEvents: CGEventMask = 0
-        keyboardEvents |= (1 << CGEventType.keyDown.rawValue)
-        keyboardEvents |= (1 << CGEventType.keyUp.rawValue)
-        keyboardEvents |= (1 << CGEventType.flagsChanged.rawValue)
-        keyboardEvents |= (1 << 14) // NSSystemDefined (media, volume, brightness keys)
+        return mask
+    }
 
-        var pointerEvents: CGEventMask = 0
-        pointerEvents |= (1 << CGEventType.leftMouseDown.rawValue)
-        pointerEvents |= (1 << CGEventType.leftMouseUp.rawValue)
-        pointerEvents |= (1 << CGEventType.rightMouseDown.rawValue)
-        pointerEvents |= (1 << CGEventType.rightMouseUp.rawValue)
-        pointerEvents |= (1 << CGEventType.otherMouseDown.rawValue)
-        pointerEvents |= (1 << CGEventType.otherMouseUp.rawValue)
-        pointerEvents |= (1 << CGEventType.mouseMoved.rawValue)
-        pointerEvents |= (1 << CGEventType.leftMouseDragged.rawValue)
-        pointerEvents |= (1 << CGEventType.rightMouseDragged.rawValue)
-        pointerEvents |= (1 << CGEventType.otherMouseDragged.rawValue)
-        pointerEvents |= (1 << CGEventType.scrollWheel.rawValue)
-        pointerEvents |= (1 << 29)
-        pointerEvents |= (1 << 30)
-        pointerEvents |= (1 << 31) // Trackpad gesture events
+    // MARK: - Event Tap Lifecycle
 
-        let eventMask = keyboardEvents | pointerEvents
+    /// Starts or updates the global Quartz CGEventTap on the main run loop.
+    /// Returns true if the tap was successfully created and active.
+    @discardableResult
+    public func start() -> Bool {
+        let desiredMask = targetEventMask(for: currentLockMode)
+
+        if let tap = eventTap {
+            if CFMachPortIsValid(tap) && activeMask == desiredMask {
+                CGEvent.tapEnable(tap: tap, enable: true)
+                isTapActive = true
+                return true
+            }
+            // Invalid port or mask change needed: clean up before recreating
+            stop()
+        }
+
         let userInfo = Unmanaged.passUnretained(self).toOpaque()
 
         let callback: CGEventTapCallBack = { proxy, type, event, refcon in
@@ -109,7 +132,7 @@ public final class InputInterceptor {
             tap: .cghidEventTap,
             place: .headInsertEventTap,
             options: .defaultTap,
-            eventsOfInterest: eventMask,
+            eventsOfInterest: desiredMask,
             callback: callback,
             userInfo: userInfo
         ) else {
@@ -123,6 +146,7 @@ public final class InputInterceptor {
 
         self.eventTap = tap
         self.runLoopSource = source
+        self.activeMask = desiredMask
         self.isTapActive = true
         return true
     }
@@ -137,6 +161,7 @@ public final class InputInterceptor {
         }
         eventTap = nil
         runLoopSource = nil
+        activeMask = 0
         isTapActive = false
         pressedKeyCodes.removeAll()
     }
@@ -148,11 +173,30 @@ public final class InputInterceptor {
     // MARK: - Core Event Evaluation
 
     /// Evaluates a keyboard event against the current lock state, custom shortcuts, and Master Key.
-    public func evaluateKeyEvent(keyCode: Int64, isKeyDown: Bool, rawFlags: UInt64) -> InterceptorAction {
+    public func evaluateKeyEvent(
+        keyCode: Int64,
+        isKeyDown: Bool,
+        rawFlags: UInt64,
+        isAutorepeat: Bool = false
+    ) -> InterceptorAction {
         if isKeyDown {
-            pressedKeyCodes.insert(keyCode)
+            if !isAutorepeat {
+                pressedKeyCodes.insert(keyCode)
+            }
         } else {
             pressedKeyCodes.remove(keyCode)
+        }
+
+        // Resync: Prune any pressed key that is not physically pressed down (only when tap is actively running in real OS session)
+        if isTapActive && !pressedKeyCodes.isEmpty {
+            pressedKeyCodes = pressedKeyCodes.filter { code in
+                CGEventSource.keyState(.combinedSessionState, key: CGKeyCode(code))
+            }
+        }
+
+        // Never trigger shortcuts on key auto-repeat (fixes rapid lock/unlock toggle loops)
+        if isAutorepeat {
+            return currentLockMode == .unlocked ? .passThrough : .swallow
         }
 
         switch currentLockMode {
@@ -163,11 +207,13 @@ public final class InputInterceptor {
 
             if lockAllShortcut.matches(pressedKeyCodes: pressedKeyCodes, rawFlags: rawFlags) {
                 pressedKeyCodes.removeAll()
+                currentLockMode = .keyboardAndMouse
                 return .lock(.keyboardAndMouse)
             }
 
             if lockKeyboardOnlyShortcut.matches(pressedKeyCodes: pressedKeyCodes, rawFlags: rawFlags) {
                 pressedKeyCodes.removeAll()
+                currentLockMode = .keyboardOnly
                 return .lock(.keyboardOnly)
             }
 
@@ -181,12 +227,14 @@ public final class InputInterceptor {
             // 1. Check Emergency Master Key ("Combowombo": Esc + Left + Up + Right simultaneously)
             if KeyCombo.masterUnlockKey.matches(pressedKeyCodes: pressedKeyCodes, rawFlags: rawFlags) {
                 pressedKeyCodes.removeAll()
+                currentLockMode = .unlocked
                 return .unlock(.masterKey)
             }
 
             // 2. Check User's Custom Unlock Shortcut
             if unlockShortcut.matches(pressedKeyCodes: pressedKeyCodes, rawFlags: rawFlags) {
                 pressedKeyCodes.removeAll()
+                currentLockMode = .unlocked
                 return .unlock(.customShortcut)
             }
 
@@ -195,11 +243,13 @@ public final class InputInterceptor {
                 if currentLockMode == .keyboardAndMouse &&
                     lockAllShortcut.matches(pressedKeyCodes: pressedKeyCodes, rawFlags: rawFlags) {
                     pressedKeyCodes.removeAll()
+                    currentLockMode = .unlocked
                     return .unlock(.toggleShortcut)
                 }
                 if currentLockMode == .keyboardOnly &&
                     lockKeyboardOnlyShortcut.matches(pressedKeyCodes: pressedKeyCodes, rawFlags: rawFlags) {
                     pressedKeyCodes.removeAll()
+                    currentLockMode = .unlocked
                     return .unlock(.toggleShortcut)
                 }
             }
@@ -214,7 +264,7 @@ public final class InputInterceptor {
         // Re-enable tap immediately if macOS disables it due to timeout or user input
         if type == .tapDisabledByTimeout || type == .tapDisabledByUserInput {
             pressedKeyCodes.removeAll()
-            if let tap = eventTap {
+            if let tap = eventTap, CFMachPortIsValid(tap) {
                 CGEvent.tapEnable(tap: tap, enable: true)
             }
             return nil
@@ -226,7 +276,14 @@ public final class InputInterceptor {
         if type == .keyDown || type == .keyUp {
             let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
             let rawFlags = event.flags.rawValue
-            let decision = evaluateKeyEvent(keyCode: keyCode, isKeyDown: type == .keyDown, rawFlags: rawFlags)
+            let isAutorepeat = (type == .keyDown) && (event.getIntegerValueField(.keyboardEventAutorepeat) != 0)
+
+            let decision = evaluateKeyEvent(
+                keyCode: keyCode,
+                isKeyDown: type == .keyDown,
+                rawFlags: rawFlags,
+                isAutorepeat: isAutorepeat
+            )
 
             switch decision {
             case .passThrough:

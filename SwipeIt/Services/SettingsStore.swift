@@ -8,9 +8,16 @@
 import Foundation
 import Observation
 
+/// Target action when configuring a custom shortcut.
+public enum ShortcutTarget: String, Sendable, CaseIterable {
+    case lockAll = "Lock Keyboard & Trackpad"
+    case lockKeyboardOnly = "Lock Keyboard Only"
+    case unlock = "Unlock"
+}
+
 /// Manages and persists user preferences, custom shortcuts, and safety timer settings.
 @Observable
-public final class SettingsStore {
+public final class SettingsStore: @unchecked Sendable {
     private let defaults: UserDefaults
 
     private enum Keys {
@@ -25,39 +32,67 @@ public final class SettingsStore {
         static let enableGlobalShortcuts = "SwipeIt.enableGlobalShortcuts"
     }
 
+    /// Closure invoked whenever any setting property changes.
+    public var onSettingsChanged: (() -> Void)?
+
+    private func notifyChanged() {
+        onSettingsChanged?()
+    }
+
     /// Custom shortcut to lock Keyboard + Mouse/Trackpad.
     public var lockAllShortcut: KeyCombo {
-        didSet { saveCodable(lockAllShortcut, forKey: Keys.lockAllShortcut) }
+        didSet {
+            saveCodable(lockAllShortcut, forKey: Keys.lockAllShortcut)
+            notifyChanged()
+        }
     }
 
     /// Custom shortcut to lock Keyboard Only (leaving Mouse/Trackpad active).
     public var lockKeyboardOnlyShortcut: KeyCombo {
-        didSet { saveCodable(lockKeyboardOnlyShortcut, forKey: Keys.lockKeyboardOnlyShortcut) }
+        didSet {
+            saveCodable(lockKeyboardOnlyShortcut, forKey: Keys.lockKeyboardOnlyShortcut)
+            notifyChanged()
+        }
     }
 
     /// Custom shortcut to unlock the device.
     public var unlockShortcut: KeyCombo {
-        didSet { saveCodable(unlockShortcut, forKey: Keys.unlockShortcut) }
+        didSet {
+            saveCodable(unlockShortcut, forKey: Keys.unlockShortcut)
+            notifyChanged()
+        }
     }
 
     /// If true, pressing the lock shortcut while locked will also toggle unlock.
     public var allowToggleWithLockShortcut: Bool {
-        didSet { defaults.set(allowToggleWithLockShortcut, forKey: Keys.allowToggleWithLockShortcut) }
+        didSet {
+            defaults.set(allowToggleWithLockShortcut, forKey: Keys.allowToggleWithLockShortcut)
+            notifyChanged()
+        }
     }
 
     /// Separate setting to show or hide the unlock option/instructions on the screen when locked.
     public var showUnlockHintOnScreen: Bool {
-        didSet { defaults.set(showUnlockHintOnScreen, forKey: Keys.showUnlockHintOnScreen) }
+        didSet {
+            defaults.set(showUnlockHintOnScreen, forKey: Keys.showUnlockHintOnScreen)
+            notifyChanged()
+        }
     }
 
     /// Visual style of the lock screen (Blackout Cleaning Screen, Frosted Shield, or Stealth/Invisible).
     public var overlayStyle: OverlayStyle {
-        didSet { defaults.set(overlayStyle.rawValue, forKey: Keys.overlayStyle) }
+        didSet {
+            defaults.set(overlayStyle.rawValue, forKey: Keys.overlayStyle)
+            notifyChanged()
+        }
     }
 
     /// Safety fail-safe: automatically unlock after `autoUnlockMinutes` if user forgets all combos.
     public var autoUnlockTimerEnabled: Bool {
-        didSet { defaults.set(autoUnlockTimerEnabled, forKey: Keys.autoUnlockTimerEnabled) }
+        didSet {
+            defaults.set(autoUnlockTimerEnabled, forKey: Keys.autoUnlockTimerEnabled)
+            notifyChanged()
+        }
     }
 
     /// Duration in minutes before automatic safety unlock triggers (default: 10 minutes).
@@ -68,12 +103,16 @@ public final class SettingsStore {
                 autoUnlockMinutes = clamped
             }
             defaults.set(autoUnlockMinutes, forKey: Keys.autoUnlockMinutes)
+            notifyChanged()
         }
     }
 
     /// Whether global keyboard shortcuts to trigger lock when unlocked are active.
     public var enableGlobalShortcuts: Bool {
-        didSet { defaults.set(enableGlobalShortcuts, forKey: Keys.enableGlobalShortcuts) }
+        didSet {
+            defaults.set(enableGlobalShortcuts, forKey: Keys.enableGlobalShortcuts)
+            notifyChanged()
+        }
     }
 
     public init(defaults: UserDefaults = .standard) {
@@ -116,6 +155,23 @@ public final class SettingsStore {
         } else {
             self.enableGlobalShortcuts = true
         }
+    }
+
+    /// Checks if a proposed shortcut is identical to another configured action or the Master Key.
+    public func duplicateCheckMessage(for candidate: KeyCombo, target: ShortcutTarget) -> String? {
+        if candidate == KeyCombo.masterUnlockKey {
+            return "This combination is reserved by the Emergency Master Key (Esc + ← + ↑ + →)."
+        }
+        if target != .lockAll && candidate == lockAllShortcut {
+            return "This combination is already assigned to 'Lock Keyboard & Trackpad'."
+        }
+        if target != .lockKeyboardOnly && candidate == lockKeyboardOnlyShortcut {
+            return "This combination is already assigned to 'Lock Keyboard Only'."
+        }
+        if target != .unlock && candidate == unlockShortcut {
+            return "This combination is already assigned to 'Unlock'."
+        }
+        return nil
     }
 
     /// Resets all shortcuts and preferences to their factory defaults.

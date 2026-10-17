@@ -77,11 +77,12 @@ public struct KeycapBadgeView: View {
     }
 }
 
-/// Interactive shortcut recorder row with tactile keycaps and snappy click-to-record behavior.
+/// Interactive shortcut recorder row with tactile keycaps, duplicate detection, and focus-loss safety.
 public struct ShortcutRecorderRow: View {
     public let title: String
     public let subtitle: String
     @Binding public var combo: KeyCombo
+    public var duplicateCheck: ((KeyCombo) -> String?)?
     public var onCommit: () -> Void
     public var onRecordingStateChange: (Bool) -> Void
 
@@ -96,12 +97,14 @@ public struct ShortcutRecorderRow: View {
         title: String,
         subtitle: String,
         combo: Binding<KeyCombo>,
+        duplicateCheck: ((KeyCombo) -> String?)? = nil,
         onCommit: @escaping () -> Void = {},
         onRecordingStateChange: @escaping (Bool) -> Void = { _ in }
     ) {
         self.title = title
         self.subtitle = subtitle
         self._combo = combo
+        self.duplicateCheck = duplicateCheck
         self.onCommit = onCommit
         self.onRecordingStateChange = onRecordingStateChange
     }
@@ -164,6 +167,12 @@ public struct ShortcutRecorderRow: View {
                 stopRecording()
             }
         }
+        // Safety: If user switches away from the window or app mid-recording, cleanly cancel recording and re-enable global hotkeys
+        .onReceive(NotificationCenter.default.publisher(for: NSApplication.didResignActiveNotification)) { _ in
+            if isRecording {
+                stopRecording()
+            }
+        }
     }
 
     private var currentTokens: [String] {
@@ -214,31 +223,39 @@ public struct ShortcutRecorderRow: View {
             // Snappy commit if modifiers + single key pressed
             if peakModifiers != 0 && peakKeys.count == 1 {
                 let candidate = KeyCombo(keyCodes: peakKeys, modifiers: peakModifiers)
-                if candidate.isValidUserShortcut {
-                    combo = candidate
-                    onCommit()
-                    stopRecording()
-                }
+                commitCandidateIfValid(candidate)
             }
         } else if event.type == .keyUp {
             heldKeys.remove(keyCode)
 
             if heldKeys.isEmpty {
+                // If user pressed only Esc to cancel recording
                 if peakKeys == [53] && peakModifiers == 0 {
                     stopRecording()
                     return
                 }
 
                 let candidate = KeyCombo(keyCodes: peakKeys, modifiers: peakModifiers)
-                if candidate.isValidUserShortcut {
-                    combo = candidate
-                    onCommit()
-                    stopRecording()
-                } else {
-                    errorMessage = "Use at least one modifier (⌘, ⌥, ⌃, ⇧) or hold 2+ keys."
-                    stopRecording()
-                }
+                commitCandidateIfValid(candidate)
             }
         }
+    }
+
+    private func commitCandidateIfValid(_ candidate: KeyCombo) {
+        if !candidate.isValidUserShortcut {
+            errorMessage = "Shortcut too simple. Use ⌘, ⌃, or ⌥+⇧ with a key (or 3+ keys for chords)."
+            stopRecording()
+            return
+        }
+
+        if let duplicateMsg = duplicateCheck?(candidate) {
+            errorMessage = duplicateMsg
+            stopRecording()
+            return
+        }
+
+        combo = candidate
+        onCommit()
+        stopRecording()
     }
 }

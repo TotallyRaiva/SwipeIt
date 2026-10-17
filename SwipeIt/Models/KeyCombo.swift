@@ -72,45 +72,71 @@ public struct KeyCombo: Codable, Equatable, Hashable, Sendable {
             let requiredModifiersPresent = (normalizedFlags & modifiers) == modifiers
             return allChordKeysPressed && requiredModifiersPresent
         } else {
-            // Standard modifier + key combo
-            return pressedKeyCodes == keyCodes && normalizedFlags == modifiers
+            // Standard modifier + key combo: target key is pressed and modifiers match
+            return keyCodes.isSubset(of: pressedKeyCodes) && normalizedFlags == modifiers
         }
     }
 
-    /// Validates whether a user-recorded shortcut is safe to use (requires at least one modifier or multiple chord keys).
+    /// Validates whether a user-recorded shortcut is safe for global use.
+    /// Rejects plain typing sequences (like Shift+letter or 2 plain keys like J+K) that could accidentally lock the Mac during regular typing.
     nonisolated public var isValidUserShortcut: Bool {
-        if keyCodes.isEmpty { return false }
-        if keyCodes.count >= 2 { return true }
-        return modifiers != 0
+        guard !keyCodes.isEmpty else { return false }
+
+        let hasCmd = (modifiers & CGEventFlags.maskCommand.rawValue) != 0
+        let hasCtrl = (modifiers & CGEventFlags.maskControl.rawValue) != 0
+        let hasOpt = (modifiers & CGEventFlags.maskAlternate.rawValue) != 0
+        let hasShift = (modifiers & CGEventFlags.maskShift.rawValue) != 0
+
+        if modifiers != 0 {
+            // Shift alone is rejected (normal typing produces capital letters)
+            if hasShift && !hasCmd && !hasCtrl && !hasOpt {
+                return false
+            }
+            // Command or Control alone or combined is safe
+            if hasCmd || hasCtrl {
+                return true
+            }
+            // Option + Shift combined is safe
+            if hasOpt && hasShift {
+                return true
+            }
+            // Option alone is allowed only for non-typing keys (Function keys, Escape, Arrows, Space)
+            if hasOpt && keyCodes.count == 1, let code = keyCodes.first {
+                let isFKey = (code >= 96 && code <= 101) || (code >= 109 && code <= 111) || (code >= 103 && code <= 107) || code == 113 || code == 120 || code == 122
+                let isSpecialKey = code == 53 || code == 49 || (code >= 123 && code <= 126) // Esc, Space, Arrow keys
+                return isFKey || isSpecialKey
+            }
+            return false
+        }
+
+        // Chords without modifiers must have at least 3 simultaneous keys (e.g., Master Key: Esc + ← + ↑ + →)
+        // 2 plain letters (e.g. J+K) are strictly disallowed to prevent accidental typing lockouts
+        return keyCodes.count >= 3
     }
 
     // MARK: - Display Formatting
 
+    /// Standard Apple modifier symbols in canonical order.
+    nonisolated public var modifierTokens: [String] {
+        var tokens: [String] = []
+        if (modifiers & CGEventFlags.maskControl.rawValue) != 0 { tokens.append("⌃") }
+        if (modifiers & CGEventFlags.maskAlternate.rawValue) != 0 { tokens.append("⌥") }
+        if (modifiers & CGEventFlags.maskShift.rawValue) != 0 { tokens.append("⇧") }
+        if (modifiers & CGEventFlags.maskCommand.rawValue) != 0 { tokens.append("⌘") }
+        return tokens
+    }
+
     /// Compact symbol representation (e.g., "⌃⌥⌘L" or "Esc + ← + ↑ + →").
     nonisolated public var displayString: String {
-        var parts: [String] = []
-
-        if modifiers != 0 {
-            var modString = ""
-            if (modifiers & CGEventFlags.maskControl.rawValue) != 0 { modString += "⌃" }
-            if (modifiers & CGEventFlags.maskAlternate.rawValue) != 0 { modString += "⌥" }
-            if (modifiers & CGEventFlags.maskShift.rawValue) != 0 { modString += "⇧" }
-            if (modifiers & CGEventFlags.maskCommand.rawValue) != 0 { modString += "⌘" }
-            parts.append(modString)
-        }
-
+        let modString = modifierTokens.joined()
         let sortedKeys = keyCodes.sorted()
         let keyLabels = sortedKeys.map { Self.keyName(for: $0) }
 
         if keyCodes.count > 1 {
             let chordString = keyLabels.joined(separator: " + ")
-            if parts.isEmpty {
-                return chordString
-            } else {
-                return parts.joined() + " + " + chordString
-            }
+            return modString.isEmpty ? chordString : "\(modString) + \(chordString)"
         } else if let singleKey = keyLabels.first {
-            return parts.joined() + singleKey
+            return modString + singleKey
         }
 
         return "None"
@@ -118,11 +144,7 @@ public struct KeyCombo: Codable, Equatable, Hashable, Sendable {
 
     /// Individual token symbols for rendering tactile keycaps (e.g. ["⌃", "⌥", "⌘", "L"] or ["Esc", "←", "↑", "→"]).
     nonisolated public var keyTokens: [String] {
-        var tokens: [String] = []
-        if (modifiers & CGEventFlags.maskControl.rawValue) != 0 { tokens.append("⌃") }
-        if (modifiers & CGEventFlags.maskAlternate.rawValue) != 0 { tokens.append("⌥") }
-        if (modifiers & CGEventFlags.maskShift.rawValue) != 0 { tokens.append("⇧") }
-        if (modifiers & CGEventFlags.maskCommand.rawValue) != 0 { tokens.append("⌘") }
+        var tokens = modifierTokens
         for code in keyCodes.sorted() {
             tokens.append(Self.keyName(for: code))
         }

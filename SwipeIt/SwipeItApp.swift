@@ -8,6 +8,7 @@
 import SwiftUI
 
 @main
+@MainActor
 struct SwipeItApp: App {
     @State private var settings: SettingsStore
     @State private var lockManager: LockManager
