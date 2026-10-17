@@ -233,6 +233,41 @@
           <p>Click the keycap icon in your macOS menu bar or press <kbd>⌃⌥⌘L</kbd> to lock. Clean your keyboard safely and press <kbd>⌃⌥⌘U</kbd> when finished!</p>
         </div>
       </div>
+
+      <!-- Gatekeeper Notice Box -->
+      <div class="gatekeeper-box">
+        <div class="gatekeeper-content">
+          <div class="gatekeeper-tag">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+            macOS Security Notice (First Launch)
+          </div>
+          <h3>"Apple cannot verify that SwipeIt is free of malware"?</h3>
+          <p>
+            Because SwipeIt is 100% free open-source software and not yet signed with a paid Apple Developer ID certificate ($99/yr), macOS Gatekeeper blocks it on first launch. This is standard for open-source Mac utilities!
+          </p>
+          <div class="gatekeeper-methods">
+            <div class="gatekeeper-method">
+              <strong>Option 1: System Settings (Recommended)</strong>
+              <p>Go to <b>System Settings → Privacy & Security</b>, scroll down to the <b>Security</b> section, and click <b>"Open Anyway"</b> (or <i>Всё равно открыть / Подтвердить вход</i>).</p>
+            </div>
+            <div class="gatekeeper-method">
+              <strong>Option 2: Right-Click in Finder</strong>
+              <p>In your <code>/Applications</code> folder, <b>Right-click</b> (or <code>Control</code> + click) on <code>SwipeIt.app</code> and select <b>Open</b>, then click <b>Open</b> in the dialog.</p>
+            </div>
+            <div class="gatekeeper-method">
+              <strong>Option 3: Terminal Command</strong>
+              <p>Run this command in Terminal to permanently clear the download quarantine flag:<br>
+              <code>xattr -cr /Applications/SwipeIt.app</code></p>
+            </div>
+          </div>
+        </div>
+        <div class="gatekeeper-media">
+          <img src="images/gatekeeper_warning.png" alt="macOS Gatekeeper Warning Dialog" class="gatekeeper-img">
+          <span class="gatekeeper-caption">Standard macOS Gatekeeper prompt on first launch</span>
+        </div>
+      </div>
     </div>
   </section>
 

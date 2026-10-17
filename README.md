@@ -60,6 +60,22 @@
 2. Open the downloaded `.dmg` and drag **SwipeIt** to your **Applications** folder.
 3. Open SwipeIt and grant **Accessibility Permission** when prompted (see below).
 
+#### ⚠️ First Launch: macOS Gatekeeper Notice
+Because SwipeIt is an independent open-source project without a paid Apple Developer ID certificate (\$99/year), macOS Gatekeeper will show a security prompt on first launch:
+> *"Apple cannot verify that SwipeIt is free of malware"* (or *«Apple не удалось подтвердить, что файл SwipeIt не содержит вредоносного ПО»*).
+
+To open the app (one-time setup):
+- **Method 1 (System Settings — Recommended)**:
+  1. Open **System Settings → Privacy & Security** (Системные настройки → Конфиденциальность и безопасность).
+  2. Scroll down to the **Security** (Безопасность) section.
+  3. Click **"Open Anyway"** (Всё равно открыть / Подтвердить вход) next to *SwipeIt was blocked*.
+- **Method 2 (Right-Click in Finder)**:
+  In `/Applications`, **Right-click** (or `Control` + click) on `SwipeIt.app` and choose **Open**, then click **Open** in the dialog.
+- **Method 3 (Terminal)**:
+  ```bash
+  xattr -cr /Applications/SwipeIt.app
+  ```
+
 ### Option 2: Build from Source
 - Requires macOS 14.0+ and Xcode 16+
 1. Clone the repository:
