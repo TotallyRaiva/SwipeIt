@@ -23,7 +23,13 @@ jobs:
       - name: Build and Package DMG
         run: |
           chmod +x ./scripts/build_dmg.sh
-          ./scripts/build_dmg.sh
+          ./scripts/build_dmg.sh > /tmp/build.log 2>&1 || {
+            tail -n 30 /tmp/build.log | while IFS= read -r line; do
+              echo "::error title=Build Failure::$line"
+            done
+            exit 1
+          }
+          cat /tmp/build.log
 
       - name: Upload Release Assets
         uses: softprops/action-gh-release@v2
