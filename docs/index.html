@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SwipeIt — Keyboard & Trackpad Locker for macOS</title>
+  <meta name="description" content="Safely clean and wipe your MacBook or mechanical keyboard without unintended clicks, keystrokes, or screen wakeups. Native Swift & SwiftUI for macOS.">
+  <link rel="icon" type="image/png" href="images/app_icon.png">
+  <link rel="stylesheet" href="styles.css">
+  <!-- OpenGraph -->
+  <meta property="og:title" content="SwipeIt — macOS Keyboard & Trackpad Locker">
+  <meta property="og:description" content="Safely clean and wipe down your Mac without stray clicks or keystrokes.">
+  <meta property="og:image" content="images/app_icon.png">
+  <meta property="og:type" content="website">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav>
+    <div class="container nav-inner">
+      <a href="#" class="nav-brand">
+        <img src="images/app_icon.png" alt="SwipeIt Icon" class="nav-logo">
+        <span>SwipeIt</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#emergency">Emergency Unlock</a></li>
+        <li><a href="#shortcuts">Shortcuts</a></li>
+        <li><a href="#setup">Setup</a></li>
+        <li><a href="https://github.com/TotallyRaiva/SwipeIt" target="_blank" rel="noopener noreferrer" class="btn-nav">GitHub</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero">
+    <div class="container">
+      <div class="hero-badge">macOS 14.0+ Sonoma & Sequoia Ready</div>
+      <br>
+      <img src="images/app_icon.png" alt="SwipeIt App Icon" class="hero-icon">
+      <h1>Lock your keys.<br>Clean with confidence.</h1>
+      <p>SwipeIt instantly blocks all keyboard and trackpad inputs with a single shortcut, allowing you to wipe down your MacBook or mechanical keyboard with zero stray keystrokes.</p>
+      
+      <div class="hero-ctas">
+        <a href="https://github.com/TotallyRaiva/SwipeIt/releases/latest/download/SwipeIt.dmg" class="btn-primary">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          Download SwipeIt.dmg
+        </a>
+        <a href="https://github.com/TotallyRaiva/SwipeIt" target="_blank" rel="noopener noreferrer" class="btn-secondary">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+          </svg>
+          Source Code on GitHub
+        </a>
+      </div>
+
+      <div class="hero-meta">
+        Free & Open Source under MIT License • Universal (Apple Silicon & Intel)
+      </div>
+    </div>
+  </header>
+
+  <!-- Emergency Box (Front and Center for locked-out users on phones) -->
+  <section class="emergency-section" id="emergency">
+    <div class="container">
+      <div class="emergency-card">
+        <div class="emergency-tag">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2L1 21h22L12 2zm0 3.99L19.53 19H4.47L12 5.99zM11 10v4h2v-4h-2zm0 6v2h2v-2h-2z"/>
+          </svg>
+          Rescue Protocol
+        </div>
+        <h2>Emergency Master Unlock Key</h2>
+        <p>Locked out or forgot your unlock combination? Press and hold the following 4 keys simultaneously on your physical keyboard:</p>
+        
+        <div class="emergency-keys">
+          <span class="keycap">Esc</span>
+          <span class="keycap-separator">+</span>
+          <span class="keycap">←</span>
+          <span class="keycap-separator">+</span>
+          <span class="keycap">↑</span>
+          <span class="keycap-separator">+</span>
+          <span class="keycap">→</span>
+        </div>
+
+        <p class="emergency-note">
+          Hardware-level fail-safe: Instantly destroys the Quartz event tap and restores complete input control. SwipeIt also features a built-in <strong>10-minute automatic unlock timer</strong> so you can never be locked out permanently.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="section" id="features">
+    <div class="container">
+      <div class="section-header">
+        <h2>Built for Mac Enthusiasts</h2>
+        <p>Zero electron bloatware. Native, lightweight, and deeply integrated with macOS.</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon-wrap">🔒</div>
+          <h3>Full Device Lock</h3>
+          <p>Blocks both the keyboard and trackpad completely. Wipe down your keys, palm rests, and trackpad with microfiber cloths without triggering clicks or shortcuts.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrap">⌨️</div>
+          <h3>Keyboard-Only Mode</h3>
+          <p>Disables keyboard input while keeping the trackpad / mouse functional. Ideal for toddler or pet prevention while streaming videos or reading documents.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrap">🌑</div>
+          <h3>Blackout Cleaning Display</h3>
+          <p>Optionally turns the screen pure pitch black with minimal backlighting to clearly reveal dust, fingerprint oils, and smudges on your display.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrap">⚡</div>
+          <h3>Lightweight & Native</h3>
+          <p>Written 100% in pure Swift & SwiftUI utilizing macOS Quartz <code>CGEventTap</code>. Sits discretely in the menu bar using negligible CPU and memory.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrap">🛡️</div>
+          <h3>Triple Safety Layer</h3>
+          <p>Equipped with an on-screen unlock guide, the four-key hardware emergency bypass, and an auto-unlock timer (10 minutes max lock duration).</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrap">⚙️</div>
+          <h3>Custom Hotkey Recorder</h3>
+          <p>Customize your trigger shortcuts right in the app preferences. Supports modifiers (Command, Option, Control, Shift) and individual keys.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Default Shortcuts Table -->
+  <section class="section" id="shortcuts">
+    <div class="container">
+      <div class="section-header">
+        <h2>Default Keyboard Shortcuts</h2>
+        <p>Pre-configured for easy one-handed or muscle-memory execution.</p>
+      </div>
+
+      <div class="shortcuts-wrap">
+        <div class="shortcut-row">
+          <div class="shortcut-info">
+            <h4>Lock Keyboard & Trackpad</h4>
+            <p>Engages full input lock and optional screen blackout.</p>
+          </div>
+          <div class="shortcut-combo">
+            <span class="keycap">⌃</span>
+            <span class="keycap">⌥</span>
+            <span class="keycap">⌘</span>
+            <span class="keycap">L</span>
+          </div>
+        </div>
+
+        <div class="shortcut-row">
+          <div class="shortcut-info">
+            <h4>Lock Keyboard Only</h4>
+            <p>Disables keystrokes, leaves mouse cursor fully operable.</p>
+          </div>
+          <div class="shortcut-combo">
+            <span class="keycap">⌃</span>
+            <span class="keycap">⌥</span>
+            <span class="keycap">⌘</span>
+            <span class="keycap">K</span>
+          </div>
+        </div>
+
+        <div class="shortcut-row">
+          <div class="shortcut-info">
+            <h4>Unlock All Inputs</h4>
+            <p>Releases all event taps and dismisses the lock overlay.</p>
+          </div>
+          <div class="shortcut-combo">
+            <span class="keycap">⌃</span>
+            <span class="keycap">⌥</span>
+            <span class="keycap">⌘</span>
+            <span class="keycap">U</span>
+          </div>
+        </div>
+
+        <div class="shortcut-row">
+          <div class="shortcut-info">
+            <h4>Hardware Emergency Override</h4>
+            <p>Unconditional bypass if you forgot your unlock shortcut.</p>
+          </div>
+          <div class="shortcut-combo">
+            <span class="keycap">Esc</span>
+            <span class="keycap">←</span>
+            <span class="keycap">↑</span>
+            <span class="keycap">→</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Setup & Permissions -->
+  <section class="section" id="setup">
+    <div class="container">
+      <div class="section-header">
+        <h2>Simple Setup</h2>
+        <p>How to install and authorize SwipeIt on your Mac in 30 seconds.</p>
+      </div>
+
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-number">1</div>
+          <h3>Download & Install</h3>
+          <p>Download <code>SwipeIt.dmg</code>, double click to open the installer disk image, and drag <strong>SwipeIt.app</strong> into your <strong>Applications</strong> folder.</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number">2</div>
+          <h3>Grant Accessibility</h3>
+          <p>Open SwipeIt. macOS will prompt you to authorize Accessibility permissions in <em>System Settings → Privacy & Security → Accessibility</em> so SwipeIt can intercept events.</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number">3</div>
+          <h3>Lock & Clean</h3>
+          <p>Click the keycap icon in your macOS menu bar or press <kbd>⌃⌥⌘L</kbd> to lock. Clean your keyboard safely and press <kbd>⌃⌥⌘U</kbd> when finished!</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-links">
+        <a href="https://github.com/TotallyRaiva/SwipeIt" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="https://github.com/TotallyRaiva/SwipeIt/releases" target="_blank" rel="noopener noreferrer">Releases</a>
+        <a href="https://github.com/TotallyRaiva/SwipeIt/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT License</a>
+        <a href="#emergency">Emergency Unlock</a>
+      </div>
+      <p>© 2026 SwipeIt Open Source Project. Designed & crafted for macOS.</p>
+    </div>
+  </footer>
+
+</body>
+</html>

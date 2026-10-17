@@ -5,6 +5,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Platform: macOS](https://img.shields.io/badge/Platform-macOS-black.svg)](#installation--setup)
 [![Zero Ads](https://img.shields.io/badge/Ads%20%26%20Telemetry-Zero-brightgreen.svg)](#philosophy)
+[![Download DMG](https://img.shields.io/badge/Download-SwipeIt.dmg-success.svg)](https://github.com/TotallyRaiva/SwipeIt/releases/latest/download/SwipeIt.dmg)
+[![Website](https://img.shields.io/badge/Website-totallyraiva.github.io%2FSwipeIt-blue.svg)](https://totallyraiva.github.io/SwipeIt/)
 
 ---
 
@@ -53,18 +55,21 @@
 
 ## 🛠️ Installation & Setup (macOS)
 
-### Prerequisites
-- macOS 14.0+
-- Xcode 16+ (to build from source)
+### Option 1: Download Pre-Built DMG (Recommended)
+1. Download the latest **[SwipeIt.dmg](https://github.com/TotallyRaiva/SwipeIt/releases/latest/download/SwipeIt.dmg)**.
+2. Open the downloaded `.dmg` and drag **SwipeIt** to your **Applications** folder.
+3. Open SwipeIt and grant **Accessibility Permission** when prompted (see below).
 
-### Build from Source
+### Option 2: Build from Source
+- Requires macOS 14.0+ and Xcode 16+
 1. Clone the repository:
    ```bash
    git clone https://github.com/TotallyRaiva/SwipeIt.git
    cd SwipeIt
    ```
-2. Open `SwipeIt.xcodeproj` in Xcode and press **`⌘R`** to build and run.
-3. Grant **Accessibility Permission** when prompted:
+2. Open `SwipeIt.xcodeproj` in Xcode and press **`⌘R`** to build and run (or run `./scripts/build_dmg.sh` to package a release DMG).
+
+### Granting Accessibility Permission
    - Open **System Settings → Privacy & Security → Accessibility**
    - Enable the toggle next to **SwipeIt**
    *(macOS requires Accessibility permission for any utility that intercepts and blocks low-level `CGEventTap` keyboard and trackpad events).*
@@ -84,7 +89,7 @@
 
 ## 🗺️ Cross-Platform Roadmap
 
-SwipeIt is architected with a clean separation between its core state/chord engine and OS-specific input hooks. See [DOCS/ARCHITECTURE.md](DOCS/ARCHITECTURE.md) for full technical details.
+SwipeIt is architected with a clean separation between its core state/chord engine and OS-specific input hooks. See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for full technical details.
 
 - [x] **macOS (v1.0)**: Native Swift & SwiftUI + Quartz Event Services (`CGEventTap`)
 - [ ] **Linux (Planned)**: `evdev` / `uinput` grab (Wayland & X11 compatible)
