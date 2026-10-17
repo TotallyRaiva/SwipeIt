@@ -116,6 +116,19 @@ public struct KeyCombo: Codable, Equatable, Hashable, Sendable {
         return "None"
     }
 
+    /// Individual token symbols for rendering tactile keycaps (e.g. ["⌃", "⌥", "⌘", "L"] or ["Esc", "←", "↑", "→"]).
+    nonisolated public var keyTokens: [String] {
+        var tokens: [String] = []
+        if (modifiers & CGEventFlags.maskControl.rawValue) != 0 { tokens.append("⌃") }
+        if (modifiers & CGEventFlags.maskAlternate.rawValue) != 0 { tokens.append("⌥") }
+        if (modifiers & CGEventFlags.maskShift.rawValue) != 0 { tokens.append("⇧") }
+        if (modifiers & CGEventFlags.maskCommand.rawValue) != 0 { tokens.append("⌘") }
+        for code in keyCodes.sorted() {
+            tokens.append(Self.keyName(for: code))
+        }
+        return tokens
+    }
+
     /// Verbose human-readable representation (e.g., "Ctrl + Option + Cmd + L" or "Esc + ← + ↑ + →").
     nonisolated public var readableDescription: String {
         var tokens: [String] = []

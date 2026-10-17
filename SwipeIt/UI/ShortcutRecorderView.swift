@@ -8,7 +8,76 @@
 import SwiftUI
 import AppKit
 
-/// Interactive shortcut recorder row allowing users to bind custom modifier shortcuts or multi-key chords.
+/// Renders a single tactile miniature keycap.
+public struct SingleKeycapView: View {
+    public let label: String
+    public var isHighlighted: Bool = false
+
+    public init(label: String, isHighlighted: Bool = false) {
+        self.label = label
+        self.isHighlighted = isHighlighted
+    }
+
+    public var body: some View {
+        Text(label)
+            .font(.system(size: 13, weight: .bold, design: .monospaced))
+            .foregroundStyle(isHighlighted ? Color.red : Color.primary.opacity(0.9))
+            .frame(minWidth: 26, minHeight: 26)
+            .padding(.horizontal, 6)
+            .background(
+                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                    .fill(Color(nsColor: .controlBackgroundColor))
+                    .shadow(color: Color.black.opacity(0.2), radius: 1, x: 0, y: 1.5)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                    .strokeBorder(
+                        isHighlighted ? Color.red.opacity(0.6) : Color.white.opacity(0.18),
+                        lineWidth: 1
+                    )
+            )
+    }
+}
+
+/// Renders a group of tactile keycaps representing a shortcut or key chord.
+public struct KeycapBadgeView: View {
+    public let tokens: [String]
+    public var isRecording: Bool = false
+    public var placeholder: String = "Press keys…"
+
+    public init(tokens: [String], isRecording: Bool = false, placeholder: String = "Press keys…") {
+        self.tokens = tokens
+        self.isRecording = isRecording
+        self.placeholder = placeholder
+    }
+
+    public var body: some View {
+        HStack(spacing: 5) {
+            if isRecording && tokens.isEmpty {
+                HStack(spacing: 6) {
+                    Circle()
+                        .fill(Color.red)
+                        .frame(width: 7, height: 7)
+                    Text(placeholder)
+                        .font(.system(.callout, design: .rounded, weight: .medium))
+                        .foregroundStyle(.red)
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 5)
+            } else if tokens.isEmpty {
+                Text(placeholder)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            } else {
+                ForEach(Array(tokens.enumerated()), id: \.offset) { _, token in
+                    SingleKeycapView(label: token, isHighlighted: isRecording)
+                }
+            }
+        }
+    }
+}
+
+/// Interactive shortcut recorder row with tactile keycaps and snappy click-to-record behavior.
 public struct ShortcutRecorderRow: View {
     public let title: String
     public let subtitle: String
@@ -38,14 +107,16 @@ public struct ShortcutRecorderRow: View {
     }
 
     public var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: 4) {
             HStack(alignment: .center, spacing: 12) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
                         .font(.body.weight(.medium))
-                    Text(subtitle)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    if !subtitle.isEmpty {
+                        Text(subtitle)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
                 }
 
                 Spacer()
@@ -59,27 +130,23 @@ public struct ShortcutRecorderRow: View {
                 } label: {
                     HStack(spacing: 6) {
                         if isRecording {
-                            Circle()
-                                .fill(Color.red)
-                                .frame(width: 8, height: 8)
-                            Text(livePreviewText)
-                                .font(.system(.callout, design: .monospaced, weight: .semibold))
-                                .foregroundStyle(.red)
+                            KeycapBadgeView(tokens: currentTokens, isRecording: true)
                         } else {
-                            Text(combo.displayString)
-                                .font(.system(.callout, design: .monospaced, weight: .semibold))
+                            KeycapBadgeView(tokens: combo.keyTokens, isRecording: false)
                         }
                     }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
-                    .frame(minWidth: 130)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 5)
                     .background(
-                        RoundedRectangle(cornerRadius: 8)
-                            .fill(isRecording ? Color.red.opacity(0.12) : Color.secondary.opacity(0.12))
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            .fill(isRecording ? Color.red.opacity(0.12) : Color.secondary.opacity(0.1))
                     )
                     .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .strokeBorder(isRecording ? Color.red.opacity(0.6) : Color.secondary.opacity(0.25), lineWidth: 1)
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            .strokeBorder(
+                                isRecording ? Color.red.opacity(0.5) : Color.white.opacity(0.1),
+                                lineWidth: 1
+                            )
                     )
                 }
                 .buttonStyle(.plain)
@@ -89,6 +156,7 @@ public struct ShortcutRecorderRow: View {
                 Text(errorMessage)
                     .font(.caption2)
                     .foregroundStyle(.red)
+                    .padding(.top, 2)
             }
         }
         .onDisappear {
@@ -98,12 +166,11 @@ public struct ShortcutRecorderRow: View {
         }
     }
 
-    private var livePreviewText: String {
+    private var currentTokens: [String] {
         if peakKeys.isEmpty && peakModifiers == 0 {
-            return "Press keys..."
+            return []
         }
-        let preview = KeyCombo(keyCodes: peakKeys, modifiers: peakModifiers)
-        return preview.displayString
+        return KeyCombo(keyCodes: peakKeys, modifiers: peakModifiers).keyTokens
     }
 
     private func startRecording() {
@@ -137,12 +204,6 @@ public struct ShortcutRecorderRow: View {
         let cgFlags = event.cgEvent?.flags.rawValue ?? 0
         let normalizedMods = cgFlags & KeyCombo.relevantModifierMask
 
-        // Allow single Escape press (without modifiers or other keys) to cancel recording
-        if event.type == .keyDown && keyCode == 53 && normalizedMods == 0 && heldKeys.isEmpty && peakKeys.isEmpty {
-            // Track in case user is building a chord starting with Esc (like Esc + arrows),
-            // so we commit on keyUp!
-        }
-
         if event.type == .keyDown {
             heldKeys.insert(keyCode)
             peakKeys.insert(keyCode)
@@ -150,7 +211,7 @@ public struct ShortcutRecorderRow: View {
                 peakModifiers = normalizedMods
             }
 
-            // If user pressed Modifiers + Single Key, commit immediately for snappy UX
+            // Snappy commit if modifiers + single key pressed
             if peakModifiers != 0 && peakKeys.count == 1 {
                 let candidate = KeyCombo(keyCodes: peakKeys, modifiers: peakModifiers)
                 if candidate.isValidUserShortcut {
@@ -162,9 +223,7 @@ public struct ShortcutRecorderRow: View {
         } else if event.type == .keyUp {
             heldKeys.remove(keyCode)
 
-            // When all held keys are released, evaluate the peak chord
             if heldKeys.isEmpty {
-                // Single Esc without modifiers cancels recording
                 if peakKeys == [53] && peakModifiers == 0 {
                     stopRecording()
                     return
@@ -176,7 +235,7 @@ public struct ShortcutRecorderRow: View {
                     onCommit()
                     stopRecording()
                 } else {
-                    errorMessage = "Include at least one modifier (⌘, ⌥, ⌃, ⇧) or hold 2+ keys together."
+                    errorMessage = "Use at least one modifier (⌘, ⌥, ⌃, ⇧) or hold 2+ keys."
                     stopRecording()
                 }
             }

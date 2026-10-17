@@ -6,208 +6,294 @@
 //
 
 import SwiftUI
+import AppKit
+
+enum SettingsTab: String, CaseIterable, Identifiable {
+    case controls = "Controls"
+    case shortcuts = "Shortcuts"
+    case safety = "Screen & Safety"
+
+    var id: String { rawValue }
+
+    var icon: String {
+        switch self {
+        case .controls: return "bolt.shield"
+        case .shortcuts: return "command.square"
+        case .safety: return "display"
+        }
+    }
+}
 
 struct ContentView: View {
     @Bindable var lockManager: LockManager
     @Bindable var settings: SettingsStore
+    @State private var selectedTab: SettingsTab = .controls
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                headerSection
-                accessibilityBanner
-                quickActionsSection
-                shortcutsSection
-                displayAndPrivacySection
-                safetyAndMasterKeySection
-                footerSection
-            }
-            .padding(24)
+        VStack(spacing: 0) {
+            headerSection
+                .padding(.horizontal, 22)
+                .padding(.top, 18)
+                .padding(.bottom, 12)
+
+            tabPickerSection
+                .padding(.horizontal, 22)
+                .padding(.bottom, 16)
+
+            Divider()
+
+            tabContentSection
+                .padding(22)
+                .frame(maxHeight: .infinity, alignment: .top)
+
+            Divider()
+
+            footerSection
+                .padding(.horizontal, 22)
+                .padding(.vertical, 10)
         }
-        .frame(minWidth: 600, idealWidth: 640, minHeight: 680, idealHeight: 740)
+        .frame(minWidth: 540, idealWidth: 580, maxWidth: 640, minHeight: 480, idealHeight: 520, maxHeight: 580)
         .background(Color(nsColor: .windowBackgroundColor))
     }
 
-    // MARK: - 1. Header
+    // MARK: - Header with App Icon & Status
 
     private var headerSection: some View {
         HStack(spacing: 14) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .fill(
-                        LinearGradient(
-                            colors: [.blue, .indigo],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .frame(width: 52, height: 52)
-
-                Image(systemName: lockManager.lockMode.systemImage)
-                    .font(.system(size: 24, weight: .bold))
-                    .foregroundStyle(.white)
-            }
+            Image(nsImage: NSApplication.shared.applicationIconImage)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 44, height: 44)
+                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .shadow(color: Color.black.opacity(0.18), radius: 3, x: 0, y: 1.5)
 
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 8) {
                     Text("SwipeIt")
-                        .font(.system(size: 22, weight: .bold, design: .rounded))
+                        .font(.system(size: 20, weight: .bold, design: .rounded))
 
-                    Text(lockManager.lockMode.shortTitle)
-                        .font(.caption.weight(.semibold))
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 3)
-                        .background(
-                            Capsule()
-                                .fill(lockManager.lockMode.isLocked ? Color.orange.opacity(0.2) : Color.green.opacity(0.18))
-                        )
-                        .foregroundStyle(lockManager.lockMode.isLocked ? .orange : .green)
+                    HStack(spacing: 5) {
+                        Circle()
+                            .fill(lockManager.lockMode.isLocked ? Color.orange : Color.green)
+                            .frame(width: 7, height: 7)
+                        Text(lockManager.lockMode.shortTitle)
+                            .font(.system(size: 11, weight: .semibold))
+                    }
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .background(
+                        Capsule()
+                            .fill(lockManager.lockMode.isLocked ? Color.orange.opacity(0.15) : Color.green.opacity(0.12))
+                    )
+                    .foregroundStyle(lockManager.lockMode.isLocked ? .orange : .green)
                 }
 
                 Text("Lightweight keyboard & trackpad locker for cleaning and safety.")
-                    .font(.subheadline)
+                    .font(.caption)
                     .foregroundStyle(.secondary)
             }
 
             Spacer()
 
             if let remaining = lockManager.formattedRemainingTime, lockManager.lockMode.isLocked {
-                Label(remaining, systemImage: "timer")
-                    .font(.system(.callout, design: .monospaced, weight: .semibold))
-                    .foregroundStyle(.orange)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 6)
-                    .background(Color.orange.opacity(0.12), in: Capsule())
+                HStack(spacing: 5) {
+                    Image(systemName: "timer")
+                    Text(remaining)
+                        .monospacedDigit()
+                }
+                .font(.system(.caption, design: .monospaced, weight: .semibold))
+                .foregroundStyle(.orange)
+                .padding(.horizontal, 9)
+                .padding(.vertical, 5)
+                .background(Color.orange.opacity(0.12), in: Capsule())
             }
         }
     }
 
-    // MARK: - 2. Accessibility Status Banner
+    // MARK: - Tab Segmented Picker
+
+    private var tabPickerSection: some View {
+        Picker("Category", selection: $selectedTab) {
+            ForEach(SettingsTab.allCases) { tab in
+                Label(tab.rawValue, systemImage: tab.icon).tag(tab)
+            }
+        }
+        .pickerStyle(.segmented)
+    }
+
+    // MARK: - Tab Content Switcher
 
     @ViewBuilder
-    private var accessibilityBanner: some View {
-        if !lockManager.accessibility.isTrusted {
-            HStack(spacing: 12) {
-                Image(systemName: "exclamationmark.shield.fill")
-                    .font(.title2)
-                    .foregroundStyle(.orange)
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Accessibility Permission Required")
-                        .font(.subheadline.weight(.semibold))
-                    Text("macOS requires Accessibility access so SwipeIt can intercept and block keyboard and trackpad events.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-
-                Spacer()
-
-                Button("Grant Access") {
-                    lockManager.accessibility.requestPermission()
-                }
-                .buttonStyle(.borderedProminent)
-                .tint(.orange)
-            }
-            .padding(14)
-            .background(
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .fill(Color.orange.opacity(0.1))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .strokeBorder(Color.orange.opacity(0.35), lineWidth: 1)
-            )
-        } else if let statusMessage = lockManager.statusBannerMessage {
-            HStack(spacing: 8) {
-                Image(systemName: "checkmark.circle.fill")
-                    .foregroundStyle(.green)
-                Text(statusMessage)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                Spacer()
-            }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .background(Color.secondary.opacity(0.08), in: RoundedRectangle(cornerRadius: 8))
+    private var tabContentSection: some View {
+        switch selectedTab {
+        case .controls:
+            controlsTabView
+        case .shortcuts:
+            shortcutsTabView
+        case .safety:
+            safetyTabView
         }
     }
 
-    // MARK: - 3. Quick Lock Actions
+    // MARK: - 1. Controls Tab
 
-    private var quickActionsSection: some View {
-        GroupBox {
-            VStack(alignment: .leading, spacing: 12) {
-                HStack(spacing: 12) {
-                    Button {
-                        lockManager.lock(mode: .keyboardAndMouse)
-                    } label: {
-                        HStack(spacing: 10) {
-                            Image(systemName: "lock.fill")
-                                .font(.title3)
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("Lock Keyboard & Trackpad")
-                                    .font(.callout.weight(.semibold))
-                                Text("Shortcut: \(settings.lockAllShortcut.displayString)")
-                                    .font(.caption2)
-                                    .foregroundStyle(.white.opacity(0.8))
-                            }
-                            Spacer()
-                        }
-                        .padding(.vertical, 8)
-                        .padding(.horizontal, 12)
-                        .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tint(.blue)
+    private var controlsTabView: some View {
+        VStack(spacing: 16) {
+            if !lockManager.accessibility.isTrusted {
+                accessibilityAlertCard
+            }
 
-                    Button {
-                        lockManager.lock(mode: .keyboardOnly)
-                    } label: {
-                        HStack(spacing: 10) {
-                            Image(systemName: "keyboard.badge.ellipsis")
-                                .font(.title3)
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("Lock Keyboard Only")
-                                    .font(.callout.weight(.semibold))
-                                Text("Shortcut: \(settings.lockKeyboardOnlyShortcut.displayString)")
-                                    .font(.caption2)
-                                    .foregroundStyle(.secondary)
-                            }
-                            Spacer()
-                        }
-                        .padding(.vertical, 8)
-                        .padding(.horizontal, 12)
-                        .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.bordered)
-                }
+            if lockManager.lockMode.isLocked {
+                VStack(spacing: 12) {
+                    Text("Input is currently locked.")
+                        .font(.headline)
+                        .foregroundStyle(.orange)
 
-                if lockManager.lockMode.isLocked {
                     Button {
                         lockManager.unlock(reason: .manualUI)
                     } label: {
-                        Label("Unlock Now (\(settings.unlockShortcut.displayString))", systemImage: "lock.open.fill")
-                            .frame(maxWidth: .infinity)
+                        HStack(spacing: 8) {
+                            Image(systemName: "lock.open.fill")
+                            Text("Unlock Input Now")
+                        }
+                        .font(.body.weight(.semibold))
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 10)
                     }
                     .buttonStyle(.borderedProminent)
                     .tint(.green)
                 }
+                .padding(20)
+                .frame(maxWidth: .infinity)
+                .background(Color.orange.opacity(0.08), in: RoundedRectangle(cornerRadius: 12))
+            } else {
+                HStack(spacing: 14) {
+                    quickActionCard(
+                        title: "Full Lock",
+                        subtitle: "Keyboard + Trackpad",
+                        icon: "lock.fill",
+                        tintColor: .blue,
+                        shortcutTokens: settings.lockAllShortcut.keyTokens
+                    ) {
+                        lockManager.lock(mode: .keyboardAndMouse)
+                    }
+
+                    quickActionCard(
+                        title: "Keyboard Only",
+                        subtitle: "Mouse stays active",
+                        icon: "keyboard.badge.ellipsis",
+                        tintColor: .indigo,
+                        shortcutTokens: settings.lockKeyboardOnlyShortcut.keyTokens
+                    ) {
+                        lockManager.lock(mode: .keyboardOnly)
+                    }
+                }
             }
-            .padding(6)
-        } label: {
-            Label("Quick Lock Controls", systemImage: "bolt.shield")
-                .font(.headline)
+
+            // Quick Status & Rescue Reminder Pill
+            HStack(spacing: 10) {
+                Image(systemName: "info.circle")
+                    .foregroundStyle(.secondary)
+                Text("Unlock with")
+                    .foregroundStyle(.secondary)
+                KeycapBadgeView(tokens: settings.unlockShortcut.keyTokens)
+                Text("or emergency Master Key")
+                    .foregroundStyle(.secondary)
+                KeycapBadgeView(tokens: KeyCombo.masterUnlockKey.keyTokens)
+            }
+            .font(.caption)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 9)
+            .background(Color(nsColor: .controlBackgroundColor), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
         }
     }
 
-    // MARK: - 4. Custom Key Combinations
+    private func quickActionCard(
+        title: String,
+        subtitle: String,
+        icon: String,
+        tintColor: Color,
+        shortcutTokens: [String],
+        action: @escaping () -> Void
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .fill(tintColor.opacity(0.16))
+                        .frame(width: 38, height: 38)
+                    Image(systemName: icon)
+                        .font(.system(size: 17, weight: .bold))
+                        .foregroundStyle(tintColor)
+                }
 
-    private var shortcutsSection: some View {
-        GroupBox {
-            VStack(alignment: .leading, spacing: 14) {
+                Spacer()
+
+                KeycapBadgeView(tokens: shortcutTokens)
+            }
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.body.weight(.bold))
+                Text(subtitle)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Button(action: action) {
+                Text("Lock Now")
+                    .font(.callout.weight(.semibold))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 5)
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(tintColor)
+        }
+        .padding(16)
+        .background(Color(nsColor: .controlBackgroundColor), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .strokeBorder(Color.white.opacity(0.08), lineWidth: 1)
+        )
+    }
+
+    private var accessibilityAlertCard: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "exclamationmark.shield.fill")
+                .font(.title3)
+                .foregroundStyle(.orange)
+
+            VStack(alignment: .leading, spacing: 1) {
+                Text("Accessibility Access Needed")
+                    .font(.subheadline.weight(.semibold))
+                Text("Required by macOS to block keyboard and mouse events.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            Button("Grant Access") {
+                lockManager.accessibility.requestPermission()
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(.orange)
+            .controlSize(.small)
+        }
+        .padding(12)
+        .background(Color.orange.opacity(0.1), in: RoundedRectangle(cornerRadius: 10))
+        .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(Color.orange.opacity(0.3), lineWidth: 1))
+    }
+
+    // MARK: - 2. Shortcuts Tab
+
+    private var shortcutsTabView: some View {
+        VStack(spacing: 14) {
+            VStack(spacing: 12) {
                 ShortcutRecorderRow(
-                    title: "Lock Keyboard + Trackpad/Mouse",
-                    subtitle: "Blocks all keys, media buttons, cursor movement, clicks, and trackpad gestures.",
+                    title: "Full Lock (Keyboard + Trackpad)",
+                    subtitle: "Blocks all keys, clicks, and gestures",
                     combo: $settings.lockAllShortcut,
                     onCommit: { lockManager.syncInterceptorConfiguration() },
                     onRecordingStateChange: { lockManager.isRecordingShortcut = $0 }
@@ -216,8 +302,8 @@ struct ContentView: View {
                 Divider()
 
                 ShortcutRecorderRow(
-                    title: "Lock Keyboard Only",
-                    subtitle: "Blocks all keyboard and media keys while keeping mouse & trackpad active.",
+                    title: "Keyboard Only Lock",
+                    subtitle: "Blocks keyboard while mouse stays free",
                     combo: $settings.lockKeyboardOnlyShortcut,
                     onCommit: { lockManager.syncInterceptorConfiguration() },
                     onRecordingStateChange: { lockManager.isRecordingShortcut = $0 }
@@ -227,53 +313,63 @@ struct ContentView: View {
 
                 ShortcutRecorderRow(
                     title: "Custom Unlock Combination",
-                    subtitle: "Unlocks your Mac from either lock mode. Click the badge to record your own combo.",
+                    subtitle: "Unlocks your Mac from any lock mode",
                     combo: $settings.unlockShortcut,
                     onCommit: { lockManager.syncInterceptorConfiguration() },
                     onRecordingStateChange: { lockManager.isRecordingShortcut = $0 }
                 )
+            }
+            .padding(16)
+            .background(Color(nsColor: .controlBackgroundColor), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
 
-                Divider()
-
+            VStack(spacing: 12) {
                 Toggle(isOn: $settings.allowToggleWithLockShortcut) {
-                    VStack(alignment: .leading, spacing: 2) {
+                    VStack(alignment: .leading, spacing: 1) {
                         Text("Allow Lock Shortcut to Toggle Unlock")
-                            .font(.body)
-                        Text("When enabled, pressing the active Lock shortcut a second time will also unlock.")
+                            .font(.body.weight(.medium))
+                        Text("Pressing the active lock shortcut again will immediately unlock.")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
                 }
+                .toggleStyle(.switch)
                 .onChange(of: settings.allowToggleWithLockShortcut) { _, _ in
                     lockManager.syncInterceptorConfiguration()
                 }
 
+                Divider()
+
                 Toggle(isOn: $settings.enableGlobalShortcuts) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Enable Global Lock Hotkeys")
-                            .font(.body)
-                        Text("Listen for Lock shortcuts anywhere in macOS while SwipeIt is running.")
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text("Enable Global Shortcuts")
+                            .font(.body.weight(.medium))
+                        Text("Listen for hotkeys anywhere in macOS while SwipeIt is running.")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
                 }
+                .toggleStyle(.switch)
                 .onChange(of: settings.enableGlobalShortcuts) { _, _ in
                     lockManager.syncInterceptorConfiguration()
                 }
             }
-            .padding(6)
-        } label: {
-            Label("Custom Key Combinations", systemImage: "command.square")
-                .font(.headline)
+            .padding(14)
+            .background(Color(nsColor: .controlBackgroundColor), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
         }
     }
 
-    // MARK: - 5. Screen & Unlock Hint Visibility
+    // MARK: - 3. Screen & Safety Tab
 
-    private var displayAndPrivacySection: some View {
-        GroupBox {
-            VStack(alignment: .leading, spacing: 14) {
-                Picker("Locked Screen Appearance", selection: $settings.overlayStyle) {
+    private var safetyTabView: some View {
+        VStack(spacing: 14) {
+            // Screen Overlay Style
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Locked Screen Appearance")
+                    .font(.subheadline.weight(.semibold))
+
+                Picker("Appearance", selection: $settings.overlayStyle) {
                     ForEach(OverlayStyle.allCases) { style in
                         Text(style.title).tag(style)
                     }
@@ -283,89 +379,53 @@ struct ContentView: View {
                 Text(settings.overlayStyle.subtitle)
                     .font(.caption)
                     .foregroundStyle(.secondary)
+                    .padding(.top, 2)
+            }
+            .padding(14)
+            .background(Color(nsColor: .controlBackgroundColor), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
 
-                Divider()
-
+            // Screen Privacy & Auto-Unlock Timer
+            VStack(spacing: 12) {
                 Toggle(isOn: $settings.showUnlockHintOnScreen) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Show Unlock Option & Shortcut on Screen")
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text("Show Unlock Instructions on Screen")
                             .font(.body.weight(.medium))
-                        Text("Turn OFF for child/pet/away safety so nobody looking at your screen can see the unlock combo.")
+                        Text("Turn OFF for privacy so nobody watching can see how to unlock.")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
                 }
-            }
-            .padding(6)
-        } label: {
-            Label("Screen Overlay & Privacy", systemImage: "display")
-                .font(.headline)
-        }
-    }
+                .toggleStyle(.switch)
 
-    // MARK: - 6. Master Key & Auto-Unlock Safety Timer
+                Divider()
 
-    private var safetyAndMasterKeySection: some View {
-        GroupBox {
-            VStack(alignment: .leading, spacing: 14) {
-                // Master Key Info Row
-                HStack(alignment: .center, spacing: 12) {
-                    Image(systemName: "key.horizontal.fill")
-                        .font(.title2)
-                        .foregroundStyle(.yellow)
-                        .frame(width: 32)
-
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Emergency Master Key (\"Combowombo\")")
-                            .font(.body.weight(.semibold))
-                        Text("Forgot your custom combo? Press these 4 keys simultaneously at any time to unlock:")
+                HStack {
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text("Automatic Safety Timer")
+                            .font(.body.weight(.medium))
+                        Text("Auto-unlocks if all combinations are forgotten.")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
 
                     Spacer()
 
-                    Text(KeyCombo.masterUnlockKey.displayString)
-                        .font(.system(.callout, design: .monospaced, weight: .bold))
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                        .background(Color.yellow.opacity(0.15), in: RoundedRectangle(cornerRadius: 8))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .strokeBorder(Color.yellow.opacity(0.45), lineWidth: 1)
-                        )
-                }
-
-                Divider()
-
-                // Auto-Unlock Timer Controls
-                Toggle(isOn: $settings.autoUnlockTimerEnabled) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Automatic Safety Unlock Timer")
-                            .font(.body.weight(.medium))
-                        Text("Automatically unlocks your Mac after the timer expires in case all combinations are forgotten.")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
+                    Toggle("", isOn: $settings.autoUnlockTimerEnabled)
+                        .toggleStyle(.switch)
+                        .labelsHidden()
                 }
 
                 if settings.autoUnlockTimerEnabled {
-                    HStack(spacing: 12) {
-                        Text("Auto-unlock duration:")
-                            .font(.callout)
-
-                        Stepper(
-                            value: $settings.autoUnlockMinutes,
-                            in: 1...120,
-                            step: 1
-                        ) {
-                            Text("\(settings.autoUnlockMinutes) min")
-                                .font(.system(.callout, design: .monospaced, weight: .semibold))
+                    HStack(spacing: 10) {
+                        Stepper(value: $settings.autoUnlockMinutes, in: 1...120) {
+                            Text("\(settings.autoUnlockMinutes) minutes")
+                                .font(.system(.body, design: .monospaced, weight: .semibold))
                         }
 
                         Spacer()
 
-                        HStack(spacing: 6) {
+                        HStack(spacing: 5) {
                             ForEach([5, 10, 15, 30, 60], id: \.self) { preset in
                                 Button("\(preset)m") {
                                     settings.autoUnlockMinutes = preset
@@ -379,36 +439,50 @@ struct ContentView: View {
                     .padding(.top, 2)
                 }
             }
-            .padding(6)
-        } label: {
-            Label("Fail-Safe Recovery & Master Key", systemImage: "lifepreserver")
-                .font(.headline)
+            .padding(14)
+            .background(Color(nsColor: .controlBackgroundColor), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
+
+            // Master Key Rescue Card
+            HStack(spacing: 12) {
+                Image(systemName: "key.horizontal.fill")
+                    .font(.title3)
+                    .foregroundStyle(.yellow)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Emergency Master Key (\"Combowombo\")")
+                        .font(.subheadline.weight(.semibold))
+                    Text("Press all 4 keys simultaneously at any time:")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+
+                KeycapBadgeView(tokens: KeyCombo.masterUnlockKey.keyTokens)
+            }
+            .padding(12)
+            .background(Color.yellow.opacity(0.1), in: RoundedRectangle(cornerRadius: 10))
+            .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(Color.yellow.opacity(0.3), lineWidth: 1))
         }
     }
 
-    // MARK: - 7. Footer
+    // MARK: - Footer
 
     private var footerSection: some View {
         HStack {
-            Text("Free & Open Source (MIT) • Zero Ads • Zero Telemetry")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            Text("Free & Open Source (MIT) • Zero Ads")
+                .font(.caption2)
+                .foregroundStyle(.tertiary)
 
             Spacer()
 
-            Button("Restore Default Shortcuts & Settings") {
+            Button("Restore Defaults") {
                 settings.resetToDefaults()
                 lockManager.syncInterceptorConfiguration()
             }
             .buttonStyle(.link)
-            .font(.caption)
+            .font(.caption2)
         }
-        .padding(.top, 4)
     }
-}
-
-#Preview {
-    let settings = SettingsStore()
-    let manager = LockManager(settings: settings)
-    ContentView(lockManager: manager, settings: settings)
 }

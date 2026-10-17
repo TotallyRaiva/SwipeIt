@@ -20,10 +20,10 @@ struct SwipeItApp: App {
     }
 
     var body: some Scene {
-        Window("SwipeIt — Keyboard & Trackpad Locker", id: "main-dashboard") {
+        Window("SwipeIt", id: "main-dashboard") {
             ContentView(lockManager: lockManager, settings: settings)
         }
-        .defaultSize(width: 640, height: 740)
+        .defaultSize(width: 580, height: 520)
 
         MenuBarExtra(
             "SwipeIt",
