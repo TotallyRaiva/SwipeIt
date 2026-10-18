@@ -189,5 +189,50 @@ final class SwipeItTests: XCTestCase {
         XCTAssertTrue(reloaded.showUnlockHintOnScreen)
         XCTAssertEqual(reloaded.autoUnlockMinutes, 10)
         XCTAssertEqual(reloaded.unlockShortcut, .defaultUnlock)
+        XCTAssertTrue(reloaded.automaticallyCheckForUpdates)
+    }
+
+    func testVersionComparisonLogic() {
+        // Newer versions
+        XCTAssertTrue(UpdateChecker.isVersion("1.0.2", newerThan: "1.0.1"))
+        XCTAssertTrue(UpdateChecker.isVersion("v1.0.2", newerThan: "1.0.1"))
+        XCTAssertTrue(UpdateChecker.isVersion("v1.1.0", newerThan: "1.0.9"))
+        XCTAssertTrue(UpdateChecker.isVersion("2.0.0", newerThan: "1.9.9"))
+        XCTAssertTrue(UpdateChecker.isVersion("1.0.1.1", newerThan: "1.0.1"))
+        XCTAssertTrue(UpdateChecker.isVersion("1.0.1", newerThan: "1.0"))
+
+        // Equal or older versions
+        XCTAssertFalse(UpdateChecker.isVersion("1.0.1", newerThan: "1.0.1"))
+        XCTAssertFalse(UpdateChecker.isVersion("v1.0.1", newerThan: "1.0.1"))
+        XCTAssertFalse(UpdateChecker.isVersion("1.0.0", newerThan: "1.0.1"))
+        XCTAssertFalse(UpdateChecker.isVersion("0.9.9", newerThan: "1.0.0"))
+        XCTAssertFalse(UpdateChecker.isVersion("1.0", newerThan: "1.0.1"))
+    }
+
+    func testUpdateCheckerReleasePayloadParsing() throws {
+        let json = """
+        {
+            "tag_name": "v1.0.2",
+            "name": "SwipeIt 1.0.2",
+            "body": "Bug fixes and improvements.",
+            "html_url": "https://github.com/TotallyRaiva/SwipeIt/releases/tag/v1.0.2",
+            "published_at": "2026-10-18T10:00:00Z",
+            "assets": [
+                {
+                    "name": "SwipeIt.dmg",
+                    "browser_download_url": "https://github.com/TotallyRaiva/SwipeIt/releases/download/v1.0.2/SwipeIt.dmg",
+                    "size": 860000
+                }
+            ]
+        }
+        """.data(using: .utf8)!
+
+        let release = try JSONDecoder().decode(GitHubRelease.self, from: json)
+        XCTAssertEqual(release.tagName, "v1.0.2")
+        XCTAssertEqual(release.name, "SwipeIt 1.0.2")
+        XCTAssertEqual(release.body, "Bug fixes and improvements.")
+        XCTAssertEqual(release.assets.count, 1)
+        XCTAssertEqual(release.assets.first?.name, "SwipeIt.dmg")
+        XCTAssertEqual(release.assets.first?.browserDownloadUrl, "https://github.com/TotallyRaiva/SwipeIt/releases/download/v1.0.2/SwipeIt.dmg")
     }
 }

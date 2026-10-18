@@ -12,11 +12,13 @@ import AppKit
 public struct MenuBarView: View {
     @Bindable public var lockManager: LockManager
     @Bindable public var settings: SettingsStore
+    @Bindable public var updateChecker: UpdateChecker
     @Environment(\.openWindow) private var openWindow
 
-    public init(lockManager: LockManager, settings: SettingsStore) {
+    public init(lockManager: LockManager, settings: SettingsStore, updateChecker: UpdateChecker) {
         self.lockManager = lockManager
         self.settings = settings
+        self.updateChecker = updateChecker
     }
 
     public var body: some View {
@@ -46,6 +48,31 @@ public struct MenuBarView: View {
             .padding(.bottom, 2)
 
             Divider()
+
+            if updateChecker.updateAvailable {
+                HStack(spacing: 8) {
+                    Image(systemName: "arrow.down.circle.fill")
+                        .foregroundStyle(.blue)
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text("v\(updateChecker.latestVersion ?? "") Available")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.primary)
+                        Text("Click to download update")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                    Button("Download") {
+                        updateChecker.openDownload()
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.mini)
+                }
+                .padding(6)
+                .background(Color.blue.opacity(0.12), in: RoundedRectangle(cornerRadius: 6))
+
+                Divider()
+            }
 
             if !lockManager.accessibility.isTrusted {
                 Button {
@@ -112,7 +139,20 @@ public struct MenuBarView: View {
             } label: {
                 Label("Settings & Shortcuts…", systemImage: "gearshape")
             }
-            .keyboardShortcut(",", modifiers: .command)
+            Button {
+                Task {
+                    await updateChecker.checkForUpdates(manual: true, settings: settings)
+                }
+            } label: {
+                HStack {
+                    Label("Check for Updates…", systemImage: "arrow.triangle.2.circlepath")
+                    if updateChecker.isChecking {
+                        Spacer()
+                        ProgressView()
+                            .controlSize(.mini)
+                    }
+                }
+            }
 
             Button(role: .destructive) {
                 NSApplication.shared.terminate(nil)

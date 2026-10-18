@@ -30,6 +30,8 @@ public final class SettingsStore: @unchecked Sendable {
         static let autoUnlockTimerEnabled = "SwipeIt.autoUnlockTimerEnabled"
         static let autoUnlockMinutes = "SwipeIt.autoUnlockMinutes"
         static let enableGlobalShortcuts = "SwipeIt.enableGlobalShortcuts"
+        static let automaticallyCheckForUpdates = "SwipeIt.automaticallyCheckForUpdates"
+        static let lastUpdateCheckTimestamp = "SwipeIt.lastUpdateCheckTimestamp"
     }
 
     /// Closure invoked whenever any setting property changes.
@@ -115,6 +117,22 @@ public final class SettingsStore: @unchecked Sendable {
         }
     }
 
+    /// Whether the app automatically checks GitHub Releases for new updates on startup.
+    public var automaticallyCheckForUpdates: Bool {
+        didSet {
+            defaults.set(automaticallyCheckForUpdates, forKey: Keys.automaticallyCheckForUpdates)
+            notifyChanged()
+        }
+    }
+
+    /// Timestamp of the last update check (epoch seconds).
+    public var lastUpdateCheckTimestamp: Double {
+        didSet {
+            defaults.set(lastUpdateCheckTimestamp, forKey: Keys.lastUpdateCheckTimestamp)
+            notifyChanged()
+        }
+    }
+
     public init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
 
@@ -155,6 +173,14 @@ public final class SettingsStore: @unchecked Sendable {
         } else {
             self.enableGlobalShortcuts = true
         }
+
+        if defaults.object(forKey: Keys.automaticallyCheckForUpdates) != nil {
+            self.automaticallyCheckForUpdates = defaults.bool(forKey: Keys.automaticallyCheckForUpdates)
+        } else {
+            self.automaticallyCheckForUpdates = true
+        }
+
+        self.lastUpdateCheckTimestamp = defaults.double(forKey: Keys.lastUpdateCheckTimestamp)
     }
 
     /// Checks if a proposed shortcut is identical to another configured action or the Master Key.
@@ -185,6 +211,8 @@ public final class SettingsStore: @unchecked Sendable {
         autoUnlockTimerEnabled = true
         autoUnlockMinutes = 10
         enableGlobalShortcuts = true
+        automaticallyCheckForUpdates = true
+        lastUpdateCheckTimestamp = 0
     }
 
     private func saveCodable<T: Encodable>(_ value: T, forKey key: String) {

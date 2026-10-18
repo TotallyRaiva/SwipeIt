@@ -27,6 +27,7 @@ enum SettingsTab: String, CaseIterable, Identifiable {
 struct ContentView: View {
     @Bindable var lockManager: LockManager
     @Bindable var settings: SettingsStore
+    @Bindable var updateChecker: UpdateChecker
     @State private var selectedTab: SettingsTab = .controls
 
     var body: some View {
@@ -35,6 +36,12 @@ struct ContentView: View {
                 .padding(.horizontal, 22)
                 .padding(.top, 18)
                 .padding(.bottom, 12)
+
+            if updateChecker.updateAvailable {
+                updateNotificationBanner
+                    .padding(.horizontal, 22)
+                    .padding(.bottom, 12)
+            }
 
             tabPickerSection
                 .padding(.horizontal, 22)
@@ -467,14 +474,118 @@ struct ContentView: View {
             .padding(12)
             .background(Color.yellow.opacity(0.1), in: RoundedRectangle(cornerRadius: 10))
             .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(Color.yellow.opacity(0.3), lineWidth: 1))
+
+            // Software Updates Card
+            VStack(alignment: .leading, spacing: 10) {
+                HStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Software Updates")
+                            .font(.body.weight(.medium))
+                        if let lastChecked = updateChecker.lastCheckedDate {
+                            Text("SwipeIt v\(updateChecker.currentAppVersion) • Checked \(lastChecked.formatted(date: .abbreviated, time: .shortened))")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        } else {
+                            Text("SwipeIt v\(updateChecker.currentAppVersion)")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+
+                    Spacer()
+
+                    Button {
+                        Task {
+                            await updateChecker.checkForUpdates(manual: true, settings: settings)
+                        }
+                    } label: {
+                        if updateChecker.isChecking {
+                            ProgressView()
+                                .controlSize(.small)
+                        } else {
+                            Text("Check for Updates")
+                        }
+                    }
+                    .disabled(updateChecker.isChecking)
+                    .controlSize(.small)
+                }
+
+                Toggle("Automatically check for updates on startup", isOn: $settings.automaticallyCheckForUpdates)
+                    .toggleStyle(.switch)
+                    .font(.caption)
+
+                if let status = updateChecker.statusMessage {
+                    Text(status)
+                        .font(.caption)
+                        .foregroundStyle(updateChecker.updateAvailable ? .blue : .secondary)
+                }
+            }
+            .padding(14)
+            .background(Color(nsColor: .controlBackgroundColor), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
         }
+    }
+
+    // MARK: - Update Notification Banner
+
+    private var updateNotificationBanner: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: "arrow.down.circle.fill")
+                .font(.title2)
+                .foregroundStyle(.blue)
+
+            VStack(alignment: .leading, spacing: 4) {
+                HStack {
+                    Text("SwipeIt v\(updateChecker.latestVersion ?? "") is Available")
+                        .font(.subheadline.weight(.semibold))
+                    Spacer()
+                    Button {
+                        updateChecker.dismissUpdate()
+                    } label: {
+                        Image(systemName: "xmark")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
+                    .buttonStyle(.plain)
+                }
+
+                if let notes = updateChecker.releaseNotes, !notes.isEmpty {
+                    Text(notes.replacingOccurrences(of: "\n", with: " "))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(2)
+                }
+
+                HStack(spacing: 8) {
+                    Button {
+                        updateChecker.openDownload()
+                    } label: {
+                        Label("Download Update (.dmg)", systemImage: "arrow.down.circle")
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.small)
+
+                    Button {
+                        updateChecker.openReleasePage()
+                    } label: {
+                        Label("Release Notes", systemImage: "safari")
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                }
+                .padding(.top, 2)
+            }
+        }
+        .padding(10)
+        .background(Color.blue.opacity(0.1), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(Color.blue.opacity(0.3), lineWidth: 1))
     }
 
     // MARK: - Footer
 
     private var footerSection: some View {
         HStack {
-            Text("Free & Open Source (MIT) • Zero Ads")
+            Text("SwipeIt v\(updateChecker.currentAppVersion) • Free & Open Source (MIT)")
                 .font(.caption2)
                 .foregroundStyle(.tertiary)
 

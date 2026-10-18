@@ -41,6 +41,8 @@
   1. Custom Unlock Shortcut (`⌃⌥⌘U` by default)
   2. Hardcoded **Master Key** (`Esc + ← + ↑ + →` held simultaneously)
   3. Adjustable **Auto-Unlock Safety Timer** (1 to 120 minutes, **10 minutes** by default)
+- **Built-in Update Checker**:
+  - Automatically alerts you in the Menu Bar and Settings when a new version is published on GitHub Releases, with one-click DMG download.
 
 ---
 
@@ -49,7 +51,7 @@
 **SwipeIt** is a personal open-source project built for everyday utility:
 - **100% Free Forever** under the [MIT License](LICENSE)
 - **Zero Ads, Zero Subscriptions, Zero Commercial Bloat**
-- **Zero Telemetry or Network Calls** — runs entirely locally using native OS APIs
+- **Zero Telemetry & Zero Tracking** — runs entirely locally; optional update checker queries public GitHub Releases API only.
 
 ---
 
