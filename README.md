@@ -3,9 +3,11 @@
 **Lightweight, 100% free & open-source utility to lock your keyboard and trackpad with custom key combinations for cleaning or safety.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Platform: macOS](https://img.shields.io/badge/Platform-macOS-black.svg)](#installation--setup)
+[![Platform: macOS | Windows | Linux](https://img.shields.io/badge/Platform-macOS%20%7C%20Windows%20%7C%20Linux-black.svg)](#installation--setup)
 [![Zero Ads](https://img.shields.io/badge/Ads%20%26%20Telemetry-Zero-brightgreen.svg)](#philosophy)
-[![Download DMG](https://img.shields.io/badge/Download-SwipeIt.dmg-success.svg)](https://github.com/TotallyRaiva/SwipeIt/releases/latest/download/SwipeIt.dmg)
+[![Download macOS DMG](https://img.shields.io/badge/macOS-SwipeIt.dmg-success.svg)](https://github.com/TotallyRaiva/SwipeIt/releases/latest/download/SwipeIt.dmg)
+[![Download Windows EXE](https://img.shields.io/badge/Windows-SwipeIt--Windows--x64.exe-0078D6.svg)](https://github.com/TotallyRaiva/SwipeIt/releases/latest/download/SwipeIt-Windows-x64.exe)
+[![Download Linux Tarball](https://img.shields.io/badge/Linux-SwipeIt--Linux--x86__64.tar.gz-FCC624.svg)](https://github.com/TotallyRaiva/SwipeIt/releases/latest/download/SwipeIt-Linux-x86_64.tar.gz)
 [![Website](https://img.shields.io/badge/Website-totallyraiva.github.io%2FSwipeIt-blue.svg)](https://totallyraiva.github.io/SwipeIt/)
 
 ---
@@ -87,10 +89,32 @@ To open the app (one-time setup):
    ```
 2. Open `SwipeIt.xcodeproj` in Xcode and press **`⌘R`** to build and run (or run `./scripts/build_dmg.sh` to package a release DMG).
 
-### Granting Accessibility Permission
+### Granting Accessibility Permission (macOS)
    - Open **System Settings → Privacy & Security → Accessibility**
    - Enable the toggle next to **SwipeIt**
    *(macOS requires Accessibility permission for any utility that intercepts and blocks low-level `CGEventTap` keyboard and trackpad events).*
+
+---
+
+## 🪟 Installation & Setup (Windows 10 / 11)
+
+1. Download the standalone portable executable **[SwipeIt-Windows-x64.exe](https://github.com/TotallyRaiva/SwipeIt/releases/latest/download/SwipeIt-Windows-x64.exe)**.
+2. Double-click `SwipeIt-Windows-x64.exe` to run (no installer or special OS permissions required — uses native Win32 `WH_KEYBOARD_LL` & `WH_MOUSE_LL` low-level hooks).
+3. *(Optional)* If Windows SmartScreen appears on first launch, click **More info → Run anyway**.
+
+---
+
+## 🐧 Installation & Setup (Linux — Wayland & X11)
+
+1. Download **[SwipeIt-Linux-x86_64.tar.gz](https://github.com/TotallyRaiva/SwipeIt/releases/latest/download/SwipeIt-Linux-x86_64.tar.gz)** and extract:
+   ```bash
+   tar -xzf SwipeIt-Linux-x86_64.tar.gz
+   ./SwipeIt
+   ```
+2. **Wayland / Kernel `evdev` Permissions**: To allow SwipeIt to grab `/dev/input/event*` devices directly (`EVIOCGRAB`) on Wayland without running as root, add your user to the `input` group once and re-login:
+   ```bash
+   sudo usermod -aG input $USER
+   ```
 
 ---
 
@@ -98,20 +122,20 @@ To open the app (one-time setup):
 
 | Action | Default Combination | Customizable? |
 | :--- | :--- | :--- |
-| **Lock Keyboard + Trackpad/Mouse** | `⌃⌥⌘L` (`Ctrl + Option + Cmd + L`) | ✅ Yes |
-| **Lock Keyboard Only** | `⌃⌥⌘K` (`Ctrl + Option + Cmd + K`) | ✅ Yes |
-| **Custom Unlock** | `⌃⌥⌘U` (`Ctrl + Option + Cmd + U`) | ✅ Yes |
+| **Lock Keyboard + Trackpad/Mouse** | `⌃⌥⌘L` (macOS) / `Ctrl + Alt + Win/Super + L` | ✅ Yes |
+| **Lock Keyboard Only** | `⌃⌥⌘K` (macOS) / `Ctrl + Alt + Win/Super + K` | ✅ Yes |
+| **Custom Unlock** | `⌃⌥⌘U` (macOS) / `Ctrl + Alt + Win/Super + U` | ✅ Yes |
 | **Emergency Master Key** | `Esc + ← + ↑ + →` (simultaneously) | 🔒 Built-in Fail-Safe |
 
 ---
 
-## 🗺️ Cross-Platform Roadmap
+## 🗺️ Cross-Platform Architecture
 
 SwipeIt is architected with a clean separation between its core state/chord engine and OS-specific input hooks. See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for full technical details.
 
-- [x] **macOS (v1.0)**: Native Swift & SwiftUI + Quartz Event Services (`CGEventTap`)
-- [ ] **Linux (Planned)**: `evdev` / `uinput` grab (Wayland & X11 compatible)
-- [ ] **Windows (Planned)**: Win32 Low-Level Hooks (`SetWindowsHookEx` with `WH_KEYBOARD_LL` & `WH_MOUSE_LL`)
+- [x] **macOS**: Native Swift & SwiftUI + Quartz Event Services (`CGEventTap`)
+- [x] **Windows**: Rust (`eframe`/`egui`) + Win32 Low-Level Hooks (`SetWindowsHookExW` with `WH_KEYBOARD_LL` & dynamic `WH_MOUSE_LL`)
+- [x] **Linux**: Rust (`eframe`/`egui`) + Kernel `evdev` (`EVIOCGRAB`, Wayland & X11 compatible)
 
 ---
 

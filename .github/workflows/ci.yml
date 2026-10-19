@@ -8,8 +8,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  test:
-    name: Run Unit Tests
+  test-macos:
+    name: macOS Swift Unit Tests
     runs-on: macos-15
     steps:
       - name: Check out code
@@ -23,10 +23,7 @@ jobs:
           sudo xcode-select -s /Applications/Xcode_16.app 2>/dev/null || \
           sudo xcode-select -s /Applications/Xcode.app
 
-      - name: Verify Xcode version
-        run: xcodebuild -version
-
-      - name: Run Test Suite
+      - name: Run macOS Test Suite
         run: |
           xcodebuild test \
             -project SwipeIt.xcodeproj \
@@ -35,3 +32,52 @@ jobs:
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO
+
+  test-windows:
+    name: Windows Rust Build & Tests
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: crossplatform
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Install Rust Stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Run Unit Tests (Windows)
+        run: cargo test
+
+      - name: Build Windows Release Executable
+        run: cargo build --release
+
+  test-linux:
+    name: Linux Rust Build & Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: crossplatform
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Install Linux Display & Input Headers
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libxcb-render0-dev \
+            libxcb-shape0-dev \
+            libxcb-xfixes0-dev \
+            libxkbcommon-dev \
+            libssl-dev \
+            libgtk-3-dev
+
+      - name: Install Rust Stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Run Unit Tests (Linux)
+        run: cargo test
+
+      - name: Build Linux Release Binary
+        run: cargo build --release
