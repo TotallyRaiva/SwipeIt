@@ -37,3 +37,8 @@ Package.resolved
 Index.noindex/
 .idea/
 .vscode/
+
+# Rust / Cargo
+crossplatform/target/
+target/
+
