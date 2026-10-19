@@ -72,7 +72,7 @@ jobs:
           mkdir -p dist
           cp crossplatform/target/release/SwipeIt.exe dist/SwipeIt-Windows-x64.exe
           cd dist
-          shasum -a 256 SwipeIt-Windows-x64.exe > SwipeIt-Windows-x64.exe.sha256
+          sha256sum SwipeIt-Windows-x64.exe > SwipeIt-Windows-x64.exe.sha256
 
       - name: Upload Windows Artifact
         uses: actions/upload-artifact@v4
