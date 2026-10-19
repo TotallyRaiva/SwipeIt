@@ -79,6 +79,17 @@ nav {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
+.version-pill {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  color: #60a5fa;
+  letter-spacing: 0.02em;
+}
+
 .nav-links {
   display: flex;
   align-items: center;
@@ -145,6 +156,14 @@ nav {
   margin-bottom: 20px;
 }
 
+.badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #34d399;
+  box-shadow: 0 0 8px rgba(52, 211, 153, 0.8);
+}
+
 .hero h1 {
   font-size: 3.25rem;
   font-weight: 800;
@@ -165,52 +184,78 @@ nav {
 
 .hero-ctas {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
   gap: 16px;
   flex-wrap: wrap;
   margin-bottom: 28px;
 }
 
-.btn-primary {
+.btn-download {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  background: var(--accent);
-  color: #ffffff;
-  padding: 14px 28px;
-  font-size: 1.05rem;
-  font-weight: 600;
+  gap: 14px;
+  padding: 13px 24px;
+  min-width: 215px;
   border-radius: var(--radius-md);
   text-decoration: none;
-  box-shadow: 0 4px 18px var(--accent-glow);
-  transition: all 0.2s ease;
+  text-align: left;
+  transition: all 0.22s ease;
+}
+
+.btn-download .os-icon {
+  flex-shrink: 0;
+  opacity: 0.95;
+  transition: transform 0.2s ease;
+}
+
+.btn-download:hover .os-icon {
+  transform: scale(1.08);
+}
+
+.btn-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.btn-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.btn-sub {
+  font-size: 0.78rem;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+.btn-primary {
+  background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
+  color: #ffffff;
+  border: 1px solid rgba(96, 165, 250, 0.45);
+  box-shadow: 0 6px 22px var(--accent-glow), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .btn-primary:hover {
-  background: var(--accent-hover);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 24px rgba(59, 130, 246, 0.4);
+  background: linear-gradient(180deg, #4f8ff7 0%, #1d4ed8 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(59, 130, 246, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
 .btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  background: var(--bg-tertiary);
+  background: linear-gradient(180deg, #1e2436 0%, #151926 100%);
   color: var(--text-primary);
-  border: 1px solid var(--border-color);
-  padding: 14px 28px;
-  font-size: 1.05rem;
-  font-weight: 600;
-  border-radius: var(--radius-md);
-  text-decoration: none;
-  transition: all 0.2s ease;
+  border: 1px solid var(--border-highlight);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 .btn-secondary:hover {
-  border-color: var(--border-highlight);
-  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(96, 165, 250, 0.5);
+  background: linear-gradient(180deg, #252d42 0%, #191f2e 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.5);
 }
 
 .hero-meta {
@@ -398,10 +443,31 @@ nav {
   font-size: 0.9rem;
 }
 
+.shortcut-combos-dual {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
 .shortcut-combo {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.combo-os-tag {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 3px 8px;
+  margin-right: 4px;
 }
 
 /* Setup Steps */
@@ -416,19 +482,25 @@ nav {
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
   padding: 30px;
+  transition: border-color 0.2s ease, transform 0.2s ease;
 }
 
-.step-number {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: var(--accent);
-  color: #fff;
-  font-weight: 700;
-  font-size: 1.1rem;
-  display: flex;
+.step-card:hover {
+  border-color: var(--border-highlight);
+  transform: translateY(-2px);
+}
+
+.step-os-header {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: rgba(59, 130, 246, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.28);
+  border-radius: 999px;
+  color: #60a5fa;
+  font-size: 0.85rem;
+  font-weight: 600;
   margin-bottom: 18px;
 }
 
@@ -442,6 +514,19 @@ nav {
   color: var(--text-secondary);
   font-size: 0.95rem;
   line-height: 1.55;
+}
+
+.feature-card code,
+.step-card code,
+.emergency-note code,
+.step-card kbd {
+  padding: 2px 6px;
+  background: rgba(17, 20, 28, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+  color: #93c5fd;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.85em;
 }
 
 /* Gatekeeper Box */
@@ -588,6 +673,9 @@ footer a:hover {
     flex-direction: column;
     align-items: flex-start;
     gap: 14px;
+  }
+  .shortcut-combos-dual {
+    align-items: flex-start;
   }
   .nav-links {
     gap: 12px;
