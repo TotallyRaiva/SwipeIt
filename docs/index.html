@@ -24,10 +24,17 @@
         <span class="version-pill">v1.1.0</span>
       </a>
       <ul class="nav-links">
-        <li><a href="#features">Features</a></li>
-        <li><a href="#emergency">Emergency Unlock</a></li>
-        <li><a href="#shortcuts">Shortcuts</a></li>
-        <li><a href="#setup">Setup</a></li>
+        <li><a href="#features" data-i18n="nav.features">Features</a></li>
+        <li><a href="#emergency" data-i18n="nav.emergency">Emergency Unlock</a></li>
+        <li><a href="#shortcuts" data-i18n="nav.shortcuts">Shortcuts</a></li>
+        <li><a href="#setup" data-i18n="nav.setup">Setup</a></li>
+        <li class="lang-item">
+          <div class="lang-switcher" role="group" aria-label="Language switcher">
+            <button type="button" class="lang-btn active" data-lang="en">EN</button>
+            <button type="button" class="lang-btn" data-lang="de">DE</button>
+            <button type="button" class="lang-btn" data-lang="ru">RU</button>
+          </div>
+        </li>
         <li><a href="https://github.com/TotallyRaiva/SwipeIt" target="_blank" rel="noopener noreferrer" class="btn-nav">GitHub</a></li>
       </ul>
     </div>
@@ -38,12 +45,12 @@
     <div class="container">
       <div class="hero-badge">
         <span class="badge-dot"></span>
-        macOS • Windows 10/11 • Linux (Wayland &amp; X11)
+        <span>macOS • Windows 10/11 • Linux (Wayland &amp; X11)</span>
       </div>
       <br>
       <img src="images/app_icon.png" alt="SwipeIt App Icon" class="hero-icon">
-      <h1>Lock your keys.<br>Clean with confidence.</h1>
-      <p>SwipeIt intercepts all keyboard, mouse, and trackpad inputs at the OS level with a single shortcut—so you can wipe down your laptop or mechanical keyboard with zero stray keystrokes.</p>
+      <h1 data-i18n="hero.title">Lock your keys.<br>Clean with confidence.</h1>
+      <p data-i18n="hero.desc">SwipeIt intercepts all keyboard, mouse, and trackpad inputs at the OS level with a single shortcut—so you can wipe down your laptop or mechanical keyboard with zero stray keystrokes.</p>
       
       <div class="hero-ctas">
         <!-- macOS Download -->
@@ -80,7 +87,7 @@
         </a>
       </div>
 
-      <div class="hero-meta">
+      <div class="hero-meta" data-i18n="hero.meta">
         100% Free &amp; Open Source (MIT) • Zero Electron Bloat • Native Swift (macOS) &amp; Pure Rust (Windows / Linux)
       </div>
     </div>
@@ -94,10 +101,10 @@
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 2L1 21h22L12 2zm0 3.99L19.53 19H4.47L12 5.99zM11 10v4h2v-4h-2zm0 6v2h2v-2h-2z"/>
           </svg>
-          Rescue Protocol • Works on All Platforms
+          <span data-i18n="emergency.tag">Rescue Protocol • Works on All Platforms</span>
         </div>
-        <h2>Emergency Master Unlock Key</h2>
-        <p>Locked out or forgot your unlock combination? Press and hold the following 4 keys simultaneously on your physical keyboard:</p>
+        <h2 data-i18n="emergency.title">Emergency Master Unlock Key</h2>
+        <p data-i18n="emergency.desc">Locked out or forgot your unlock combination? Press and hold the following 4 keys simultaneously on your physical keyboard:</p>
         
         <div class="emergency-keys">
           <span class="keycap">Esc</span>
@@ -109,7 +116,7 @@
           <span class="keycap">→</span>
         </div>
 
-        <p class="emergency-note">
+        <p class="emergency-note" data-i18n="emergency.note">
           Hardware-level fail-safe: Immediately releases the macOS Quartz Event Tap, Windows Low-Level Hook, or Linux Kernel <code>evdev</code> grab and restores full control. Every lock session also includes a <strong>countdown auto-unlock timer</strong> so you can never be locked out permanently.
         </p>
       </div>
@@ -120,57 +127,57 @@
   <section class="section" id="features">
     <div class="container">
       <div class="section-header">
-        <h2>Engineered for Hardware Control</h2>
-        <p>Zero Electron bloatware. Tiny, ultra-fast native binaries crafted specifically for each operating system's input stack.</p>
+        <h2 data-i18n="features.title">Engineered for Hardware Control</h2>
+        <p data-i18n="features.subtitle">Zero Electron bloatware. Tiny, ultra-fast native binaries crafted specifically for each operating system's input stack.</p>
       </div>
 
       <div class="features-grid">
         <div class="feature-card">
           <div class="feature-icon-wrap">🔒</div>
-          <h3>Full Device Lock</h3>
-          <p>Blocks both keyboard and mouse/trackpad completely—including scroll wheels, gestures, and system hotkeys. Wipe down your keys and palm rests with zero stray clicks.</p>
+          <h3 data-i18n="features.f1.title">Full Device Lock</h3>
+          <p data-i18n="features.f1.desc">Blocks both keyboard and mouse/trackpad completely—including scroll wheels, gestures, and system hotkeys. Wipe down your keys and palm rests with zero stray clicks.</p>
         </div>
 
         <div class="feature-card">
           <div class="feature-icon-wrap">⌨️</div>
-          <h3>Keyboard-Only Mode</h3>
-          <p>Disables all keyboard input while keeping your mouse or trackpad completely click-through. Ideal for toddler or cat prevention while watching videos or reading.</p>
+          <h3 data-i18n="features.f2.title">Keyboard-Only Mode</h3>
+          <p data-i18n="features.f2.desc">Disables all keyboard input while keeping your mouse or trackpad completely click-through. Ideal for toddler or cat prevention while watching videos or reading.</p>
         </div>
 
         <div class="feature-card">
           <div class="feature-icon-wrap">🌑</div>
-          <h3>Blackout Cleaning Display</h3>
-          <p>Turns the display pure pitch black to clearly reveal dust, fingerprint oils, and smudges on your screen while you wipe it with a microfiber cloth.</p>
+          <h3 data-i18n="features.f3.title">Blackout Cleaning Display</h3>
+          <p data-i18n="features.f3.desc">Turns the display pure pitch black to clearly reveal dust, fingerprint oils, and smudges on your screen while you wipe it with a microfiber cloth.</p>
         </div>
 
         <div class="feature-card">
           <div class="feature-icon-wrap">🍎</div>
-          <h3>macOS Native (Swift)</h3>
-          <p>Built with pure Swift &amp; SwiftUI using adaptive Quartz <code>CGEventTap</code> filtering—passive listen-only while idle, active interception only while locked.</p>
+          <h3 data-i18n="features.f4.title">macOS Native (Swift)</h3>
+          <p data-i18n="features.f4.desc">Built with pure Swift &amp; SwiftUI using adaptive Quartz <code>CGEventTap</code> filtering—passive listen-only while idle, active interception only while locked.</p>
         </div>
 
         <div class="feature-card">
           <div class="feature-icon-wrap">🦀</div>
-          <h3>Windows &amp; Linux (Rust)</h3>
-          <p>Powered by a single cross-platform Rust core using Win32 <code>WH_KEYBOARD_LL</code> / <code>WH_MOUSE_LL</code> hooks on Windows and kernel <code>evdev</code> <code>EVIOCGRAB</code> on Linux (Wayland &amp; X11).</p>
+          <h3 data-i18n="features.f5.title">Windows &amp; Linux (Rust)</h3>
+          <p data-i18n="features.f5.desc">Powered by a single cross-platform Rust core using Win32 <code>WH_KEYBOARD_LL</code> / <code>WH_MOUSE_LL</code> hooks on Windows and kernel <code>evdev</code> <code>EVIOCGRAB</code> on Linux (Wayland &amp; X11).</p>
         </div>
 
         <div class="feature-card">
           <div class="feature-icon-wrap">🛡️</div>
-          <h3>Triple Safety Layer</h3>
-          <p>Protected by an on-screen unlock HUD, the 4-key physical emergency override (<code>Esc + ← + ↑ + →</code>), and a configurable auto-unlock countdown timer.</p>
+          <h3 data-i18n="features.f6.title">Triple Safety Layer</h3>
+          <p data-i18n="features.f6.desc">Protected by an on-screen unlock HUD, the 4-key physical emergency override (<code>Esc + ← + ↑ + →</code>), and a configurable auto-unlock countdown timer.</p>
         </div>
 
         <div class="feature-card">
           <div class="feature-icon-wrap">⚙️</div>
-          <h3>Custom Hotkey Recorder</h3>
-          <p>Record your own modifier or multi-key combinations right in the app with built-in conflict detection and safety validation against accidental typing triggers.</p>
+          <h3 data-i18n="features.f7.title">Custom Hotkey Recorder</h3>
+          <p data-i18n="features.f7.desc">Record your own modifier or multi-key combinations right in the app with built-in conflict detection and safety validation against accidental typing triggers.</p>
         </div>
 
         <div class="feature-card">
           <div class="feature-icon-wrap">🔄</div>
-          <h3>In-App Update Notifier</h3>
-          <p>Checks GitHub Releases automatically or on demand across macOS, Windows, and Linux, alerting you with a direct 1-click download when a new release drops.</p>
+          <h3 data-i18n="features.f8.title">In-App Update Notifier</h3>
+          <p data-i18n="features.f8.desc">Checks GitHub Releases automatically or on demand across macOS, Windows, and Linux, alerting you with a direct 1-click download when a new release drops.</p>
         </div>
       </div>
     </div>
@@ -180,15 +187,15 @@
   <section class="section" id="shortcuts">
     <div class="container">
       <div class="section-header">
-        <h2>Default Keyboard Shortcuts</h2>
-        <p>Pre-configured for fast muscle-memory execution across macOS, Windows, and Linux.</p>
+        <h2 data-i18n="shortcuts.title">Default Keyboard Shortcuts</h2>
+        <p data-i18n="shortcuts.subtitle">Pre-configured for fast muscle-memory execution across macOS, Windows, and Linux.</p>
       </div>
 
       <div class="shortcuts-wrap">
         <div class="shortcut-row">
           <div class="shortcut-info">
-            <h4>Lock Keyboard &amp; Mouse / Trackpad</h4>
-            <p>Engages full input lock and optional screen blackout overlay.</p>
+            <h4 data-i18n="shortcuts.s1.title">Lock Keyboard &amp; Mouse / Trackpad</h4>
+            <p data-i18n="shortcuts.s1.desc">Engages full input lock and optional screen blackout overlay.</p>
           </div>
           <div class="shortcut-combos-dual">
             <div class="shortcut-combo" title="macOS">
@@ -210,8 +217,8 @@
 
         <div class="shortcut-row">
           <div class="shortcut-info">
-            <h4>Lock Keyboard Only</h4>
-            <p>Disables keystrokes while leaving the mouse cursor and clicks active.</p>
+            <h4 data-i18n="shortcuts.s2.title">Lock Keyboard Only</h4>
+            <p data-i18n="shortcuts.s2.desc">Disables keystrokes while leaving the mouse cursor and clicks active.</p>
           </div>
           <div class="shortcut-combos-dual">
             <div class="shortcut-combo" title="macOS">
@@ -233,8 +240,8 @@
 
         <div class="shortcut-row">
           <div class="shortcut-info">
-            <h4>Unlock All Inputs</h4>
-            <p>Releases all input hooks/grabs and dismisses the lock overlay.</p>
+            <h4 data-i18n="shortcuts.s3.title">Unlock All Inputs</h4>
+            <p data-i18n="shortcuts.s3.desc">Releases all input hooks/grabs and dismisses the lock overlay.</p>
           </div>
           <div class="shortcut-combos-dual">
             <div class="shortcut-combo" title="macOS">
@@ -256,11 +263,11 @@
 
         <div class="shortcut-row">
           <div class="shortcut-info">
-            <h4>Hardware Emergency Override</h4>
-            <p>Unconditional bypass on every OS if you forget your custom unlock shortcut.</p>
+            <h4 data-i18n="shortcuts.s4.title">Hardware Emergency Override</h4>
+            <p data-i18n="shortcuts.s4.desc">Unconditional bypass on every OS if you forget your custom unlock shortcut.</p>
           </div>
           <div class="shortcut-combo">
-            <span class="combo-os-tag">All OS</span>
+            <span class="combo-os-tag" data-i18n="shortcuts.all_os">All OS</span>
             <span class="keycap">Esc</span>
             <span class="keycap">←</span>
             <span class="keycap">↑</span>
@@ -275,8 +282,8 @@
   <section class="section" id="setup">
     <div class="container">
       <div class="section-header">
-        <h2>Quick Setup by Platform</h2>
-        <p>Up and running in under 30 seconds on your operating system of choice.</p>
+        <h2 data-i18n="setup.title">Quick Setup by Platform</h2>
+        <p data-i18n="setup.subtitle">Up and running in under 30 seconds on your operating system of choice.</p>
       </div>
 
       <div class="steps-grid">
@@ -287,8 +294,8 @@
             </svg>
             <span>macOS 13+</span>
           </div>
-          <h3>Install &amp; Grant Accessibility</h3>
-          <p>Open <code>SwipeIt.dmg</code>, drag <strong>SwipeIt.app</strong> to <strong>Applications</strong>, and grant permission in <em>System Settings → Privacy &amp; Security → Accessibility</em> so SwipeIt can filter inputs.</p>
+          <h3 data-i18n="setup.mac.title">Install &amp; Grant Accessibility</h3>
+          <p data-i18n="setup.mac.desc">Open <code>SwipeIt.dmg</code>, drag <strong>SwipeIt.app</strong> to <strong>Applications</strong>, and grant permission in <em>System Settings → Privacy &amp; Security → Accessibility</em> so SwipeIt can filter inputs.</p>
         </div>
 
         <div class="step-card">
@@ -298,8 +305,8 @@
             </svg>
             <span>Windows 10 / 11</span>
           </div>
-          <h3>Zero-Install Portable .exe</h3>
-          <p>Download and run <code>SwipeIt-Windows-x64.exe</code> directly—no installer or admin permissions required for standard Win32 input locking. Lock via the dashboard or <kbd>Ctrl+Alt+Win+L</kbd>.</p>
+          <h3 data-i18n="setup.win.title">Zero-Install Portable .exe</h3>
+          <p data-i18n="setup.win.desc">Download and run <code>SwipeIt-Windows-x64.exe</code> directly—no installer or admin permissions required for standard Win32 input locking. Lock via the dashboard or <kbd>Ctrl+Alt+Win+L</kbd>.</p>
         </div>
 
         <div class="step-card">
@@ -309,8 +316,8 @@
             </svg>
             <span>Linux (Wayland &amp; X11)</span>
           </div>
-          <h3>Extract &amp; Enable Input Group</h3>
-          <p>Extract <code>SwipeIt-Linux-x86_64.tar.gz</code>. For Wayland/X11 hardware grab via <code>/dev/input</code>, add your user once with <code>sudo usermod -aG input $USER</code> (or run with <code>sudo</code>).</p>
+          <h3 data-i18n="setup.linux.title">Extract &amp; Enable Input Group</h3>
+          <p data-i18n="setup.linux.desc">Extract <code>SwipeIt-Linux-x86_64.tar.gz</code>. For Wayland/X11 hardware grab via <code>/dev/input</code>, add your user once with <code>sudo usermod -aG input $USER</code> (or run with <code>sudo</code>).</p>
         </div>
       </div>
 
@@ -321,31 +328,31 @@
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
             </svg>
-            macOS Security Notice (First Launch)
+            <span data-i18n="gk.tag">macOS Security Notice (First Launch)</span>
           </div>
-          <h3>"Apple cannot verify that SwipeIt is free of malware"?</h3>
-          <p>
+          <h3 data-i18n="gk.title">"Apple cannot verify that SwipeIt is free of malware"?</h3>
+          <p data-i18n="gk.desc">
             Because SwipeIt is 100% free open-source software and not yet signed with a paid Apple Developer ID certificate ($99/yr), macOS Gatekeeper blocks it on first launch. This is standard for open-source Mac utilities!
           </p>
           <div class="gatekeeper-methods">
             <div class="gatekeeper-method">
-              <strong>Option 1: System Settings (Recommended)</strong>
-              <p>Go to <b>System Settings → Privacy &amp; Security</b>, scroll down to the <b>Security</b> section, and click <b>"Open Anyway"</b> (or <i>Всё равно открыть / Подтвердить вход</i>).</p>
+              <strong data-i18n="gk.m1.title">Option 1: System Settings (Recommended)</strong>
+              <p data-i18n="gk.m1.desc">Go to <b>System Settings → Privacy &amp; Security</b>, scroll down to the <b>Security</b> section, and click <b>"Open Anyway"</b> (or <i>Всё равно открыть / Подтвердить вход</i>).</p>
             </div>
             <div class="gatekeeper-method">
-              <strong>Option 2: Right-Click in Finder</strong>
-              <p>In your <code>/Applications</code> folder, <b>Right-click</b> (or <code>Control</code> + click) on <code>SwipeIt.app</code> and select <b>Open</b>, then click <b>Open</b> in the dialog.</p>
+              <strong data-i18n="gk.m2.title">Option 2: Right-Click in Finder</strong>
+              <p data-i18n="gk.m2.desc">In your <code>/Applications</code> folder, <b>Right-click</b> (or <code>Control</code> + click) on <code>SwipeIt.app</code> and select <b>Open</b>, then click <b>Open</b> in the dialog.</p>
             </div>
             <div class="gatekeeper-method">
-              <strong>Option 3: Terminal Command</strong>
-              <p>Run this command in Terminal to permanently clear the download quarantine flag:<br>
+              <strong data-i18n="gk.m3.title">Option 3: Terminal Command</strong>
+              <p data-i18n="gk.m3.desc">Run this command in Terminal to permanently clear the download quarantine flag:<br>
               <code>xattr -cr /Applications/SwipeIt.app</code></p>
             </div>
           </div>
         </div>
         <div class="gatekeeper-media">
           <img src="images/gatekeeper_warning.png" alt="macOS Gatekeeper Warning Dialog" class="gatekeeper-img">
-          <span class="gatekeeper-caption">Standard macOS Gatekeeper prompt on first launch</span>
+          <span class="gatekeeper-caption" data-i18n="gk.caption">Standard macOS Gatekeeper prompt on first launch</span>
         </div>
       </div>
     </div>
@@ -356,16 +363,16 @@
     <div class="container">
       <div class="footer-links">
         <a href="https://github.com/TotallyRaiva/SwipeIt" target="_blank" rel="noopener noreferrer">GitHub</a>
-        <a href="https://github.com/TotallyRaiva/SwipeIt/releases" target="_blank" rel="noopener noreferrer">Releases</a>
-        <a href="https://github.com/TotallyRaiva/SwipeIt/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT License</a>
-        <a href="#emergency">Emergency Unlock</a>
+        <a href="https://github.com/TotallyRaiva/SwipeIt/releases" target="_blank" rel="noopener noreferrer" data-i18n="footer.releases">Releases</a>
+        <a href="https://github.com/TotallyRaiva/SwipeIt/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" data-i18n="footer.license">MIT License</a>
+        <a href="#emergency" data-i18n="footer.emergency">Emergency Unlock</a>
       </div>
-      <p>© 2026 SwipeIt Open Source Project. Built natively for macOS, Windows &amp; Linux.</p>
+      <p data-i18n="footer.copy">© 2026 SwipeIt Open Source Project. Built natively for macOS, Windows &amp; Linux.</p>
     </div>
   </footer>
 
   <script>
-    // Highlight the visitor's OS download button automatically
+    // 1. Highlight the visitor's OS download button automatically
     (function () {
       var ua = navigator.userAgent.toLowerCase();
       var os = 'mac';
@@ -381,6 +388,265 @@
           btn.classList.add('btn-secondary');
           btn.classList.remove('btn-primary');
         }
+      });
+    })();
+
+    // 2. Multi-language support (EN / DE / RU)
+    (function () {
+      var translations = {
+        en: {
+          "page.title": "SwipeIt — Keyboard & Trackpad Locker for macOS, Windows & Linux",
+          "nav.features": "Features",
+          "nav.emergency": "Emergency Unlock",
+          "nav.shortcuts": "Shortcuts",
+          "nav.setup": "Setup",
+          "hero.title": "Lock your keys.<br>Clean with confidence.",
+          "hero.desc": "SwipeIt intercepts all keyboard, mouse, and trackpad inputs at the OS level with a single shortcut—so you can wipe down your laptop or mechanical keyboard with zero stray keystrokes.",
+          "hero.meta": "100% Free &amp; Open Source (MIT) • Zero Electron Bloat • Native Swift (macOS) &amp; Pure Rust (Windows / Linux)",
+          "emergency.tag": "Rescue Protocol • Works on All Platforms",
+          "emergency.title": "Emergency Master Unlock Key",
+          "emergency.desc": "Locked out or forgot your unlock combination? Press and hold the following 4 keys simultaneously on your physical keyboard:",
+          "emergency.note": "Hardware-level fail-safe: Immediately releases the macOS Quartz Event Tap, Windows Low-Level Hook, or Linux Kernel <code>evdev</code> grab and restores full control. Every lock session also includes a <strong>countdown auto-unlock timer</strong> so you can never be locked out permanently.",
+          "features.title": "Engineered for Hardware Control",
+          "features.subtitle": "Zero Electron bloatware. Tiny, ultra-fast native binaries crafted specifically for each operating system's input stack.",
+          "features.f1.title": "Full Device Lock",
+          "features.f1.desc": "Blocks both keyboard and mouse/trackpad completely—including scroll wheels, gestures, and system hotkeys. Wipe down your keys and palm rests with zero stray clicks.",
+          "features.f2.title": "Keyboard-Only Mode",
+          "features.f2.desc": "Disables all keyboard input while keeping your mouse or trackpad completely click-through. Ideal for toddler or cat prevention while watching videos or reading.",
+          "features.f3.title": "Blackout Cleaning Display",
+          "features.f3.desc": "Turns the display pure pitch black to clearly reveal dust, fingerprint oils, and smudges on your screen while you wipe it with a microfiber cloth.",
+          "features.f4.title": "macOS Native (Swift)",
+          "features.f4.desc": "Built with pure Swift &amp; SwiftUI using adaptive Quartz <code>CGEventTap</code> filtering—passive listen-only while idle, active interception only while locked.",
+          "features.f5.title": "Windows &amp; Linux (Rust)",
+          "features.f5.desc": "Powered by a single cross-platform Rust core using Win32 <code>WH_KEYBOARD_LL</code> / <code>WH_MOUSE_LL</code> hooks on Windows and kernel <code>evdev</code> <code>EVIOCGRAB</code> on Linux (Wayland &amp; X11).",
+          "features.f6.title": "Triple Safety Layer",
+          "features.f6.desc": "Protected by an on-screen unlock HUD, the 4-key physical emergency override (<code>Esc + ← + ↑ + →</code>), and a configurable auto-unlock countdown timer.",
+          "features.f7.title": "Custom Hotkey Recorder",
+          "features.f7.desc": "Record your own modifier or multi-key combinations right in the app with built-in conflict detection and safety validation against accidental typing triggers.",
+          "features.f8.title": "In-App Update Notifier",
+          "features.f8.desc": "Checks GitHub Releases automatically or on demand across macOS, Windows, and Linux, alerting you with a direct 1-click download when a new release drops.",
+          "shortcuts.title": "Default Keyboard Shortcuts",
+          "shortcuts.subtitle": "Pre-configured for fast muscle-memory execution across macOS, Windows, and Linux.",
+          "shortcuts.s1.title": "Lock Keyboard &amp; Mouse / Trackpad",
+          "shortcuts.s1.desc": "Engages full input lock and optional screen blackout overlay.",
+          "shortcuts.s2.title": "Lock Keyboard Only",
+          "shortcuts.s2.desc": "Disables keystrokes while leaving the mouse cursor and clicks active.",
+          "shortcuts.s3.title": "Unlock All Inputs",
+          "shortcuts.s3.desc": "Releases all input hooks/grabs and dismisses the lock overlay.",
+          "shortcuts.s4.title": "Hardware Emergency Override",
+          "shortcuts.s4.desc": "Unconditional bypass on every OS if you forget your custom unlock shortcut.",
+          "shortcuts.all_os": "All OS",
+          "setup.title": "Quick Setup by Platform",
+          "setup.subtitle": "Up and running in under 30 seconds on your operating system of choice.",
+          "setup.mac.title": "Install &amp; Grant Accessibility",
+          "setup.mac.desc": "Open <code>SwipeIt.dmg</code>, drag <strong>SwipeIt.app</strong> to <strong>Applications</strong>, and grant permission in <em>System Settings → Privacy &amp; Security → Accessibility</em> so SwipeIt can filter inputs.",
+          "setup.win.title": "Zero-Install Portable .exe",
+          "setup.win.desc": "Download and run <code>SwipeIt-Windows-x64.exe</code> directly—no installer or admin permissions required for standard Win32 input locking. Lock via the dashboard or <kbd>Ctrl+Alt+Win+L</kbd>.",
+          "setup.linux.title": "Extract &amp; Enable Input Group",
+          "setup.linux.desc": "Extract <code>SwipeIt-Linux-x86_64.tar.gz</code>. For Wayland/X11 hardware grab via <code>/dev/input</code>, add your user once with <code>sudo usermod -aG input $USER</code> (or run with <code>sudo</code>).",
+          "gk.tag": "macOS Security Notice (First Launch)",
+          "gk.title": "\"Apple cannot verify that SwipeIt is free of malware\"?",
+          "gk.desc": "Because SwipeIt is 100% free open-source software and not yet signed with a paid Apple Developer ID certificate ($99/yr), macOS Gatekeeper blocks it on first launch. This is standard for open-source Mac utilities!",
+          "gk.m1.title": "Option 1: System Settings (Recommended)",
+          "gk.m1.desc": "Go to <b>System Settings → Privacy &amp; Security</b>, scroll down to the <b>Security</b> section, and click <b>\"Open Anyway\"</b> (or <i>Trotzdem öffnen / Всё равно открыть</i>).",
+          "gk.m2.title": "Option 2: Right-Click in Finder",
+          "gk.m2.desc": "In your <code>/Applications</code> folder, <b>Right-click</b> (or <code>Control</code> + click) on <code>SwipeIt.app</code> and select <b>Open</b>, then click <b>Open</b> in the dialog.",
+          "gk.m3.title": "Option 3: Terminal Command",
+          "gk.m3.desc": "Run this command in Terminal to permanently clear the download quarantine flag:<br><code>xattr -cr /Applications/SwipeIt.app</code>",
+          "gk.caption": "Standard macOS Gatekeeper prompt on first launch",
+          "footer.releases": "Releases",
+          "footer.license": "MIT License",
+          "footer.emergency": "Emergency Unlock",
+          "footer.copy": "© 2026 SwipeIt Open Source Project. Built natively for macOS, Windows &amp; Linux."
+        },
+        de: {
+          "page.title": "SwipeIt — Tastatur- & Trackpad-Sperre für macOS, Windows & Linux",
+          "nav.features": "Funktionen",
+          "nav.emergency": "Notfall-Entsperrung",
+          "nav.shortcuts": "Tastenkürzel",
+          "nav.setup": "Installation",
+          "hero.title": "Tasten sperren.<br>Sorgenfrei reinigen.",
+          "hero.desc": "SwipeIt blockiert alle Tastatur-, Maus- und Trackpad-Eingaben auf Betriebssystemebene mit einem einzigen Tastenkürzel – damit Sie Ihren Laptop oder Ihre mechanische Tastatur ohne ungewollte Klicks reinigen können.",
+          "hero.meta": "100% Kostenlos &amp; Open Source (MIT) • Kein Electron-Ballast • Natives Swift (macOS) &amp; reines Rust (Windows / Linux)",
+          "emergency.tag": "Rettungsprotokoll • Funktioniert auf allen Plattformen",
+          "emergency.title": "Notfall-Master-Tastenkombination",
+          "emergency.desc": "Ausgesperrt oder Entsperr-Kombination vergessen? Halten Sie die folgenden 4 Tasten gleichzeitig auf Ihrer physischen Tastatur gedrückt:",
+          "emergency.note": "Hardwarenahe Sicherheitsfunktion: Gibt den macOS Quartz Event Tap, Windows Low-Level Hook oder Linux-Kernel-<code>evdev</code>-Grab sofort frei und stellt die volle Kontrolle wieder her. Jede Sperre verfügt zudem über einen <strong>automatischen Countdown-Timer</strong>, damit Sie sich niemals dauerhaft aussperren können.",
+          "features.title": "Entwickelt für echte Hardware-Kontrolle",
+          "features.subtitle": "Kein Electron-Ballast. Winzige, ultraschnelle native Binärdateien, maßgeschneidert für den Eingabe-Stack des jeweiligen Betriebssystems.",
+          "features.f1.title": "Vollständige Gerätesperre",
+          "features.f1.desc": "Blockiert Tastatur sowie Maus/Trackpad vollständig – inklusive Scrollrad, Gesten und System-Hotkeys. Reinigen Sie Tasten und Handballenauflage ohne verirrte Klicks.",
+          "features.f2.title": "Nur-Tastatur-Modus",
+          "features.f2.desc": "Deaktiviert alle Tastatureingaben, während Maus und Trackpad normal bedienbar bleiben. Ideal als Kinder- oder Katzenschutz beim Videoschauen oder Lesen.",
+          "features.f3.title": "Blackout-Reinigungsbildschirm",
+          "features.f3.desc": "Schaltet das Display tiefschwarz, damit Staub, Fingerabdrücke und Schlieren beim Abwischen mit einem Mikrofasertuch sofort sichtbar werden.",
+          "features.f4.title": "Nativ für macOS (Swift)",
+          "features.f4.desc": "Geschrieben in reinem Swift &amp; SwiftUI mit adaptiver Quartz-<code>CGEventTap</code>-Filterung – passives Lauschen im Leerlauf, aktive Blockierung nur im gesperrten Zustand.",
+          "features.f5.title": "Windows &amp; Linux (Rust)",
+          "features.f5.desc": "Angetrieben von einem plattformübergreifenden Rust-Kern mit Win32-<code>WH_KEYBOARD_LL</code>- / <code>WH_MOUSE_LL</code>-Hooks unter Windows und Kernel-<code>evdev</code>-<code>EVIOCGRAB</code> unter Linux (Wayland &amp; X11).",
+          "features.f6.title": "Dreifache Sicherheitsstufe",
+          "features.f6.desc": "Geschützt durch ein On-Screen-HUD, die 4-Tasten-Notfallkombination (<code>Esc + ← + ↑ + →</code>) und einen konfigurierbaren Auto-Unlock-Countdown.",
+          "features.f7.title": "Eigene Tastenkürzel aufnehmen",
+          "features.f7.desc": "Nehmen Sie eigene Tasten-Kombinationen direkt in der App auf – mit integrierter Konflikterkennung und Schutz vor versehentlichem Auslösen beim Tippen.",
+          "features.f8.title": "In-App-Update-Assistent",
+          "features.f8.desc": "Prüft GitHub Releases automatisch oder auf Knopfdruck unter macOS, Windows und Linux und bietet einen direkten 1-Klick-Download bei neuen Versionen.",
+          "shortcuts.title": "Standard-Tastenkürzel",
+          "shortcuts.subtitle": "Vorkonfiguriert für schnelle, intuitive Bedienung unter macOS, Windows und Linux.",
+          "shortcuts.s1.title": "Tastatur &amp; Maus / Trackpad sperren",
+          "shortcuts.s1.desc": "Aktiviert die vollständige Eingabesperre und den optionalen Blackout-Bildschirm.",
+          "shortcuts.s2.title": "Nur Tastatur sperren",
+          "shortcuts.s2.desc": "Deaktiviert Tastenanschläge, lässt Mauszeiger und Klicks jedoch aktiv.",
+          "shortcuts.s3.title": "Alle Eingaben entsperren",
+          "shortcuts.s3.desc": "Gibt alle Eingabe-Hooks frei und schließt das Sperr-Overlay.",
+          "shortcuts.s4.title": "Hardware-Notfall-Entsperrung",
+          "shortcuts.s4.desc": "Bedingungslose Sofort-Entsperrung auf jedem OS, falls Sie Ihr eigenes Kürzel vergessen.",
+          "shortcuts.all_os": "Alle OS",
+          "setup.title": "Schnellstart nach Plattform",
+          "setup.subtitle": "In weniger als 30 Sekunden startklar auf Ihrem bevorzugten Betriebssystem.",
+          "setup.mac.title": "Installieren &amp; Bedienungshilfen erlauben",
+          "setup.mac.desc": "Öffnen Sie <code>SwipeIt.dmg</code>, ziehen Sie <strong>SwipeIt.app</strong> in den Ordner <strong>Programme</strong> und aktivieren Sie die Berechtigung unter <em>Systemeinstellungen → Datenschutz &amp; Sicherheit → Bedienungshilfen</em>.",
+          "setup.win.title": "Portables .exe ohne Installation",
+          "setup.win.desc": "Laden Sie <code>SwipeIt-Windows-x64.exe</code> herunter und starten Sie es direkt – kein Installer und keine Admin-Rechte für die Win32-Sperre erforderlich. Sperren per Dashboard oder <kbd>Ctrl+Alt+Win+L</kbd>.",
+          "setup.linux.title": "Entpacken &amp; Input-Gruppe aktivieren",
+          "setup.linux.desc": "Entpacken Sie <code>SwipeIt-Linux-x86_64.tar.gz</code>. Für den Hardware-Grab unter Wayland/X11 über <code>/dev/input</code> fügen Sie Ihren Benutzer einmalig per <code>sudo usermod -aG input $USER</code> hinzu (oder starten Sie mit <code>sudo</code>).",
+          "gk.tag": "macOS-Sicherheitshinweis (Erster Start)",
+          "gk.title": "„Apple kann nicht überprüfen, ob SwipeIt frei von Schadsoftware ist\"?",
+          "gk.desc": "Da SwipeIt 100 % kostenlose Open-Source-Software ist und noch nicht mit einem kostenpflichtigen Apple-Developer-ID-Zertifikat (99 $/Jahr) signiert wurde, blockiert macOS Gatekeeper den ersten Start. Das ist bei freien Mac-Tools völlig normal!",
+          "gk.m1.title": "Option 1: Systemeinstellungen (Empfohlen)",
+          "gk.m1.desc": "Öffnen Sie <b>Systemeinstellungen → Datenschutz &amp; Sicherheit</b>, scrollen Sie zum Bereich <b>Sicherheit</b> und klicken Sie auf <b>„Trotzdem öffnen\"</b> (oder <i>Open Anyway</i>).",
+          "gk.m2.title": "Option 2: Rechtsklick im Finder",
+          "gk.m2.desc": "Klicken Sie im Ordner <code>/Applications</code> (Programme) mit der <b>rechten Maustaste</b> (oder <code>Control</code> + Klick) auf <code>SwipeIt.app</code>, wählen Sie <b>Öffnen</b> und bestätigen Sie im Dialog mit <b>Öffnen</b>.",
+          "gk.m3.title": "Option 3: Terminal-Befehl",
+          "gk.m3.desc": "Führen Sie diesen Befehl im Terminal aus, um das Quarantäne-Flag dauerhaft zu entfernen:<br><code>xattr -cr /Applications/SwipeIt.app</code>",
+          "gk.caption": "Standard-Meldung von macOS Gatekeeper beim ersten Start",
+          "footer.releases": "Versionen",
+          "footer.license": "MIT-Lizenz",
+          "footer.emergency": "Notfall-Entsperrung",
+          "footer.copy": "© 2026 SwipeIt Open Source Project. Nativ entwickelt für macOS, Windows &amp; Linux."
+        },
+        ru: {
+          "page.title": "SwipeIt — Блокировка клавиатуры и трекпада для macOS, Windows и Linux",
+          "nav.features": "Возможности",
+          "nav.emergency": "Аварийный выход",
+          "nav.shortcuts": "Горячие клавиши",
+          "nav.setup": "Установка",
+          "hero.title": "Заблокируйте клавиши.<br>Протирайте без забот.",
+          "hero.desc": "SwipeIt перехватывает все нажатия клавиш, движения мыши и жесты трекпада на системном уровне одним сочетанием клавиш — протирайте ноутбук или механическую клавиатуру без единого случайного нажатия.",
+          "hero.meta": "100% бесплатно и Open Source (MIT) • Без тяжёлого Electron • Нативный Swift (macOS) и чистый Rust (Windows / Linux)",
+          "emergency.tag": "Протокол спасения • Работает на всех платформах",
+          "emergency.title": "Аварийная мастер-комбинация разблокировки",
+          "emergency.desc": "Заблокировали ввод или забыли комбинацию разблокировки? Нажмите и удерживайте одновременно следующие 4 клавиши на физической клавиатуре:",
+          "emergency.note": "Защита на аппаратном уровне: мгновенно отключает перехват Quartz Event Tap в macOS, низкоуровневый хук в Windows или захват ядра <code>evdev</code> в Linux и возвращает полный контроль. Каждая сессия также снабжена <strong>таймером авторазблокировки</strong>, поэтому остаться без управления невозможно.",
+          "features.title": "Создан для аппаратного контроля",
+          "features.subtitle": "Никакого раздутого Electron. Компактные, молниеносные нативные бинарники, созданные специально под подсистему ввода каждой ОС.",
+          "features.f1.title": "Полная блокировка устройств",
+          "features.f1.desc": "Полностью блокирует клавиатуру, мышь и трекпад — включая колесо прокрутки, мультитач-жесты и системные хоткеи. Протирайте клавиши и корпус без случайных кликов.",
+          "features.f2.title": "Режим «Только клавиатура»",
+          "features.f2.desc": "Отключает ввод с клавиатуры, оставляя мышь и трекпад полностью активными. Идеально для защиты от детей или кошек во время просмотра видео и чтения.",
+          "features.f3.title": "Чёрный экран для чистки",
+          "features.f3.desc": "Заливает дисплей глубоким чёрным цветом, чтобы на экране были отлично видны пылинки, отпечатки пальцев и разводы при протирке микрофиброй.",
+          "features.f4.title": "Нативно для macOS (Swift)",
+          "features.f4.desc": "Написан на чистом Swift и SwiftUI с адаптивным фильтром Quartz <code>CGEventTap</code> — пассивное ожидание в фоне и активный перехват только во время блокировки.",
+          "features.f5.title": "Windows и Linux (Rust)",
+          "features.f5.desc": "Работает на едином кроссплатформенном ядре Rust с использованием хуков Win32 <code>WH_KEYBOARD_LL</code> / <code>WH_MOUSE_LL</code> в Windows и ядерного <code>evdev</code> <code>EVIOCGRAB</code> в Linux (Wayland и X11).",
+          "features.f6.title": "Тройной уровень безопасности",
+          "features.f6.desc": "Защищён экранным индикатором подсказок, физической комбинацией из 4 клавиш (<code>Esc + ← + ↑ + →</code>) и настраиваемым таймером автоматической разблокировки.",
+          "features.f7.title": "Запись своих горячих клавиш",
+          "features.f7.desc": "Записывайте собственные сочетания клавиш прямо в приложении со встроенной проверкой конфликтов и защитой от случайного срабатывания при обычной печати.",
+          "features.f8.title": "Проверка обновлений в приложении",
+          "features.f8.desc": "Автоматически или по запросу проверяет релизы на GitHub в macOS, Windows и Linux, предлагая прямое скачивание новой версии в один клик.",
+          "shortcuts.title": "Горячие клавиши по умолчанию",
+          "shortcuts.subtitle": "Заранее настроены для быстрого и удобного вызова на macOS, Windows и Linux.",
+          "shortcuts.s1.title": "Заблокировать клавиатуру и мышь / трекпад",
+          "shortcuts.s1.desc": "Включает полную блокировку ввода и опциональное затемнение экрана.",
+          "shortcuts.s2.title": "Заблокировать только клавиатуру",
+          "shortcuts.s2.desc": "Отключает нажатия клавиш, оставляя курсор мыши и клики рабочими.",
+          "shortcuts.s3.title": "Разблокировать весь ввод",
+          "shortcuts.s3.desc": "Снимает все перехваты ввода и закрывает защитный экран блокировки.",
+          "shortcuts.s4.title": "Аварийный аппаратный сброс",
+          "shortcuts.s4.desc": "Безусловное снятие блокировки на любой ОС, если вы забыли свой хоткей.",
+          "shortcuts.all_os": "Все ОС",
+          "setup.title": "Быстрая установка по платформам",
+          "setup.subtitle": "Готов к работе менее чем за 30 секунд на вашей операционной системе.",
+          "setup.mac.title": "Установка и доступ к Универсальному доступу",
+          "setup.mac.desc": "Откройте <code>SwipeIt.dmg</code>, перетащите <strong>SwipeIt.app</strong> в папку <strong>Программы</strong> и выдайте разрешение в разделе <em>Системные настройки → Конфиденциальность и безопасность → Универсальный доступ</em>.",
+          "setup.win.title": "Портативный .exe без установки",
+          "setup.win.desc": "Скачайте и запустите <code>SwipeIt-Windows-x64.exe</code> напрямую — установщик и права администратора не требуются. Блокируйте через окно приложения или сочетанием <kbd>Ctrl+Alt+Win+L</kbd>.",
+          "setup.linux.title": "Распаковка и доступ к группе input",
+          "setup.linux.desc": "Распакуйте <code>SwipeIt-Linux-x86_64.tar.gz</code>. Для аппаратного перехвата в Wayland/X11 через <code>/dev/input</code> один раз добавьте пользователя в группу командой <code>sudo usermod -aG input $USER</code> (или запустите через <code>sudo</code>).",
+          "gk.tag": "Примечание безопасности macOS (первый запуск)",
+          "gk.title": "«Apple не может проверить файл SwipeIt на наличие вредоносного ПО»?",
+          "gk.desc": "Поскольку SwipeIt — на 100% бесплатный проект с открытым исходным кодом и пока не подписан платным сертификатом Apple Developer ID ($99/год), macOS Gatekeeper предупреждает при первом запуске. Это стандартно для свободных утилит на Mac!",
+          "gk.m1.title": "Способ 1: Системные настройки (рекомендуется)",
+          "gk.m1.desc": "Откройте <b>Системные настройки → Конфиденциальность и безопасность</b>, прокрутите вниз до раздела <b>Безопасность</b> и нажмите <b>«Всё равно открыть»</b> (или <i>Подтвердить вход / Open Anyway</i>).",
+          "gk.m2.title": "Способ 2: Правый клик в Finder",
+          "gk.m2.desc": "В папке <code>/Applications</code> (Программы) нажмите <b>правой кнопкой мыши</b> (или <code>Control</code> + клик) по <code>SwipeIt.app</code>, выберите <b>Открыть</b> и подтвердите <b>Открыть</b> в диалоговом окне.",
+          "gk.m3.title": "Способ 3: Команда в Терминале",
+          "gk.m3.desc": "Выполните эту команду в Терминале, чтобы навсегда снять карантинный атрибут загрузки:<br><code>xattr -cr /Applications/SwipeIt.app</code>",
+          "gk.caption": "Стандартное окно macOS Gatekeeper при первом запуске",
+          "footer.releases": "Релизы",
+          "footer.license": "Лицензия MIT",
+          "footer.emergency": "Аварийный выход",
+          "footer.copy": "© 2026 Проект с открытым кодом SwipeIt. Создано нативно для macOS, Windows и Linux."
+        }
+      };
+
+      function applyLanguage(lang) {
+        if (!translations[lang]) lang = 'en';
+        var dict = translations[lang];
+        document.documentElement.lang = lang;
+        if (dict["page.title"]) {
+          document.title = dict["page.title"];
+        }
+
+        var elements = document.querySelectorAll('[data-i18n]');
+        elements.forEach(function (el) {
+          var key = el.getAttribute('data-i18n');
+          if (dict[key]) {
+            el.innerHTML = dict[key];
+          }
+        });
+
+        var langButtons = document.querySelectorAll('.lang-btn');
+        langButtons.forEach(function (btn) {
+          if (btn.getAttribute('data-lang') === lang) {
+            btn.classList.add('active');
+          } else {
+            btn.classList.remove('active');
+          }
+        });
+
+        try {
+          localStorage.setItem('swipeit_lang', lang);
+        } catch (e) {}
+      }
+
+      // Determine initial language: URL param (?lang=de|ru|en) -> localStorage -> browser language -> 'en'
+      var initialLang = 'en';
+      var params = new URLSearchParams(window.location.search);
+      var urlLang = params.get('lang');
+      var savedLang = null;
+      try {
+        savedLang = localStorage.getItem('swipeit_lang');
+      } catch (e) {}
+
+      if (urlLang && translations[urlLang]) {
+        initialLang = urlLang;
+      } else if (savedLang && translations[savedLang]) {
+        initialLang = savedLang;
+      } else {
+        var navLang = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+        if (navLang.indexOf('de') === 0) initialLang = 'de';
+        else if (navLang.indexOf('ru') === 0) initialLang = 'ru';
+      }
+
+      applyLanguage(initialLang);
+
+      var langButtons = document.querySelectorAll('.lang-btn');
+      langButtons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          applyLanguage(btn.getAttribute('data-lang'));
+        });
       });
     })();
   </script>

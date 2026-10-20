@@ -123,6 +123,42 @@ nav {
   background: rgba(255, 255, 255, 0.08);
 }
 
+.lang-switcher {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 2px;
+  gap: 2px;
+}
+
+.lang-btn {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  padding: 5px 9px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  font-family: inherit;
+}
+
+.lang-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.lang-btn.active {
+  background: var(--accent);
+  color: #ffffff;
+  box-shadow: 0 2px 8px var(--accent-glow);
+}
+
 /* Hero Section */
 .hero {
   padding: 80px 0 60px;
@@ -678,9 +714,9 @@ footer a:hover {
     align-items: flex-start;
   }
   .nav-links {
-    gap: 12px;
+    gap: 10px;
   }
-  .nav-links a:not(.btn-nav) {
+  .nav-links li:not(.lang-item):not(:last-child) {
     display: none;
   }
 }
